@@ -1,0 +1,46 @@
+<h1 style="text-align: center;" mat-dialog-title>{{'HEADER.SETTING' | translate}}</h1>
+<form [formGroup]="configForm">
+  <mat-tab-group mat-dialog-content>
+    <mat-tab label="{{'SETTING.COMMON.TAB' | translate}}">
+      <div style="padding-top: 32px; text-align: center;" fxLayout="row wrap" fxLayout.lt-sm="column" fxLayoutGap="20px" fxLayoutAlign="flex-start">
+        <div style="padding-bottom: 10px;" fxFlex="0 1 calc(33.3% - 20px)" fxFlex.lt-md="0 1 calc(50% - 20px)" fxFlex.lt-sm="100%">
+          <span fxFlex>{{'SETTING.COMMON.DEFAULT_LANG' | translate}}: </span>
+          <mat-select fxFlex formControlName="defaultLang" placeholder="{{('HEADER.LANGUAGE.' + data.defaultLang) | translate}}">
+            <mat-option *ngFor="let item of langs" [value]="item">{{('HEADER.LANGUAGE.' + item) | translate}}</mat-option>
+          </mat-select>
+        </div>
+        <div style="padding-bottom: 10px;" fxFlex="0 1 calc(33.3% - 20px)" fxFlex.lt-md="0 1 calc(50% - 20px)" fxFlex.lt-sm="100%">
+          <mat-checkbox formControlName="autoSave">{{'SETTING.COMMON.AUTOSAVE' | translate}}</mat-checkbox>
+        </div>
+        <div style="padding-bottom: 10px;" fxFlex="0 1 calc(33.3% - 20px)" fxFlex.lt-md="0 1 calc(50% - 20px)" fxFlex.lt-sm="100%">
+          <mat-checkbox formControlName="initAndLoad">{{'SETTING.COMMON.INIT_AND_LOAD' | translate}}</mat-checkbox>
+        </div>
+        <div style="padding-bottom: 10px;" fxFlex="0 1 calc(33.3% - 20px)" fxFlex.lt-md="0 1 calc(50% - 20px)" fxFlex.lt-sm="100%">
+          <mat-checkbox formControlName="loadHistoryAppData">{{'SETTING.COMMON.LOAD_HISTORY_DATA' | translate}}</mat-checkbox>
+        </div>
+      </div>
+    </mat-tab>
+    <mat-tab label="{{'SETTING.HEXO.TAB' | translate}}">
+      <div style="padding-top: 32px; text-align: center;" fxLayout="row wrap" fxLayout.lt-sm="column" fxLayoutGap="20px" fxLayoutAlign="flex-start">
+        <div style="padding-bottom: 10px;" fxFlex="0 1 calc(33.3% - 20px)" fxFlex.lt-md="0 1 calc(50% - 20px)"  fxLayout="row wrap" fxLayout.lt-sm="column" fxLayoutGap="20px" fxLayoutAlign="flex-start">
+          <span fxFlex="100">{{'SETTING.HEXO.DEFAULT_PORT' | translate}}</span>
+          <mat-form-field fxFlex="100">
+            <input fxFlex formControlName="defaultServerPort" matInput type="number" value="{{data.defaultServerPort}}">
+            <mat-error *ngIf="configForm.get('defaultServerPort').errors">{{configForm.get('defaultServerPort').errors | errors | async}}</mat-error>
+          </mat-form-field>
+        </div>
+        <div style="padding-bottom: 10px;" fxFlex="0 1 calc(33.3% - 20px)" fxFlex.lt-md="0 1 calc(50% - 20px)"  fxLayout="row wrap" fxLayout.lt-sm="column" fxLayoutGap="20px" fxLayoutAlign="flex-start">
+          <span fxFlex="100">{{'SETTING.HEXO.DEFAULT_LAYOUT' | translate}}</span>
+          <mat-form-field fxFlex="100">
+            <input fxFlex formControlName="defaultLayout" matInput type="text" value="{{data.defaultLayout}}">
+            <mat-error *ngIf="configForm.get('defaultLayout').errors">{{configForm.get('defaultLayout').errors | errors | async}}</mat-error>
+          </mat-form-field>
+        </div>
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+  <div style="padding-top: 32px;" mat-dialog-actions fxLayout fxLayoutAlign="center center">
+    <button type="button" style="font-size: 20px;" mat-button (click)="dialogRef.close()">{{'FORM.CANCEL' | translate}}</button>
+    <button type="submit" style="font-size: 20px;" mat-button (click)="confirm()" cdkFocusInitial>{{'FORM.CONFIRM' | translate}}</button>
+  </div>
+</form>

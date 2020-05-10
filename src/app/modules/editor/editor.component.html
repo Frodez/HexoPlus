@@ -1,0 +1,15 @@
+<div *ngIf="hexoService.hasHexo" fxFlex fxLayout="column">
+  <mat-toolbar fxFlex>
+    <mat-toolbar-row fxFlex fxLayout="row" fxLayoutAlign.lt-md>
+      <span fxFlex *ngIf="currentFile">{{currentFile}}</span>
+      <button mat-button mat-icon-button color="primary" fxFlex (click)="newLayout()">{{'EDITOR.NEW' | translate}}</button>
+      <button mat-button mat-icon-button color="primary" fxFlex (click)="openLayout()">{{'EDITOR.OPEN' | translate}}</button>
+      <button mat-button mat-icon-button color="primary" fxFlex (click)="save()" *ngIf="currentFile">{{'EDITOR.SAVE' | translate}}</button>
+      <button mat-button mat-icon-button color="primary" fxFlex (click)="saveAs()">{{'EDITOR.SAVEAS' | translate}}</button>
+      <button mat-button mat-icon-button color="primary" fxFlex (click)="publish()" *ngIf="isDraft">{{'EDITOR.SAVEAS' | translate}}</button>
+    </mat-toolbar-row>
+  </mat-toolbar>
+  <div fxFlex>
+    <app-vditor resize></app-vditor>
+  </div>
+</div>

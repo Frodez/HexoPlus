@@ -1,0 +1,85 @@
+{
+  "SUCCESS": {
+    "OPERATE":"操作成功"
+  },
+  "ERROR": {
+    "LOADING_CONFIG":"加载配置文件时发生错误.",
+    "ONLY_ONE_FILE":"只需要一个文件.",
+    "ONLY_ONE_PATH":"只需要一个文件夹路径.",
+    "INVALID_PORT":"端口不可用.请检查您的设置,或者确认没有任何程序占用该端口.",
+    "VALIDATE":{
+      "REQUIRED":"必须存在数据.",
+      "MIN":"数字不得小于{{min}}.",
+      "MAX":"数字不得大于{{max}}."
+    }
+  },
+  "FORM": {
+    "CANCEL":"取消",
+    "CONFIRM":"确定"
+  },
+  "HEADER":{
+    "TOGGLE": {
+      "FOLD": "折叠菜单",
+      "OPEN": "展开菜单"
+    },
+    "SETTING": "设置",
+    "LANGUAGE": {
+      "MENU_PREFIX": "当前语言",
+      "zh_CN": "中文(简体)",
+      "en_US": "英文"
+    },
+    "MAX":"最大化",
+    "RESTORE":"恢复",
+    "MIN":"最小化",
+    "CLOSE":"关闭"
+  },
+  "SETTING": {
+    "COMMON": {
+      "TAB": "通用",
+      "DEFAULT_LANG":"默认语言",
+      "AUTOSAVE":"自动保存",
+      "INIT_AND_LOAD":"新建配置后自动加载",
+      "LOAD_HISTORY_DATA":"打开应用时自动加载历史数据"
+    },
+    "HEXO": {
+      "TAB": "Hexo",
+      "DEFAULT_PORT":"默认端口",
+      "DEFAULT_LAYOUT":"生成布局时的默认布局"
+    }
+  },
+  "SIDEBAR":{
+    "UNLOADED": {
+      "LOAD":"加载配置",
+      "INIT":"新建配置"
+    },
+    "LOADED": {
+      "CHANGE":"更换配置",
+      "REFRESH":"刷新配置",
+      "CLEAR":"清除配置",
+      "SERVE":"启动服务",
+      "STOP":"停止服务"
+    },
+    "LOCAL_SERVER": {
+      "STATUS":"本地服务器状态",
+      "RUNNING":"运行中",
+      "STOPED":"已停止"
+    },
+    "MENU":{
+      "WELCOME":"欢迎",
+      "EDITOR":"编辑器",
+      "VIEW":"浏览"
+    }
+  },
+  "EDITOR":{
+    "OPEN":"打开",
+    "SAVE":"保存",
+    "SAVEAS":"另存为",
+    "NEW":"新建",
+    "NEW_LAYOUT":{
+      "DIALOG_TITLE":"新文章",
+      "LAYOUT_TITLE":"文章标题",
+      "LAYOUT":"文章布局(只有当你需要改变布局时才可以改变它)",
+      "DEFAULT_LAYOUT":"恢复到默认布局"
+    }
+  }
+}

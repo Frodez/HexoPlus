@@ -1,0 +1,19 @@
+<mat-toolbar role="heading" style="text-align: center;">
+  <mat-toolbar-row fxFlex fxLayout="row" fxLayoutAlign.lt-md>
+      <div fxFlex fxLayout="row" fxLayoutAlign="end center" style="font-size: 16px;">
+        <button fxFlex mat-button mat-icon-button color="primary" style="font-size: 16px; padding-right: 50px;" (click)="toggleSidebar()">
+          {{(toggle ? 'HEADER.TOGGLE.FOLD' : 'HEADER.TOGGLE.OPEN') | translate}}
+        </button>
+        <button fxFlex mat-button mat-icon-button color="primary" style="font-size: 16px; padding-right: 50px;" (click)="openSetting()">
+          {{'HEADER.SETTING' | translate}}
+        </button>
+      </div>
+      <span fxFlex="75" style="padding-left: 50px; font-size: 28px;">Hexo Plus</span>
+      <div fxFlex fxLayout="row" fxLayoutAlign="end center" style="font-size: 16px;">
+        <span fxFlex>{{'HEADER.LANGUAGE.MENU_PREFIX' | translate}}: </span>
+        <mat-select fxFlex style="text-align: center;" [(value)]="currentLang" (valueChange)="translateService.use(currentLang);" placeholder="{{('HEADER.LANGUAGE.' + currentLang) | translate}}">
+          <mat-option *ngFor="let item of translateService.getLangs()" [value]="item">{{('HEADER.LANGUAGE.' + item) | translate}}</mat-option>
+        </mat-select>
+      </div>
+  </mat-toolbar-row>
+</mat-toolbar>

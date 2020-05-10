@@ -1,0 +1,85 @@
+{
+  "SUCCESS": {
+    "OPERATE":"operate success"
+  },
+  "ERROR": {
+    "LOADING_CONFIG":"An error occurred while loading the configuration file.",
+    "ONLY_ONE_FILE":"Only one file is needed here.",
+    "ONLY_ONE_PATH":"Only one path is needed here.",
+    "INVALID_PORT":"The port is invalid. Please check your setting or confirm that no program is occupying the port.",
+    "VALIDATE":{
+      "REQUIRED":"There must exist data.",
+      "MIN":"The number must be no less than {{min}}.",
+      "MAX":"The number must be no more than {{max}}."
+    }
+  },
+  "FORM": {
+    "CANCEL":"cancel",
+    "CONFIRM":"ok"
+  },
+  "HEADER":{
+    "TOGGLE": {
+      "FOLD": "fold menu",
+      "OPEN": "open menu"
+    },
+    "SETTING": "setting",
+    "LANGUAGE": {
+      "MENU_PREFIX": "current lang",
+      "zh_CN": "zh_CN",
+      "en_US": "english"
+    },
+    "MAX":"maximize",
+    "RESTORE":"restore",
+    "MIN":"minimize",
+    "CLOSE":"close"
+  },
+  "SETTING": {
+    "COMMON": {
+      "TAB": "common",
+      "DEFAULT_LANG":"default language",
+      "AUTOSAVE":"autosave",
+      "INIT_AND_LOAD":"load config after init",
+      "LOAD_HISTORY_DATA":"load the history application data after the application opened"
+    },
+    "HEXO": {
+      "TAB": "hexo",
+      "DEFAULT_PORT":"default port",
+      "DEFAULT_LAYOUT":"the default layout when you create a new layout"
+    }
+  },
+  "SIDEBAR":{
+    "UNLOADED": {
+      "LOAD":"load",
+      "INIT":"init"
+    },
+    "LOADED": {
+      "CHANGE":"change",
+      "REFRESH":"refresh",
+      "CLEAR":"clear",
+      "SERVE":"serve",
+      "STOP":"stop"
+    },
+    "LOCAL_SERVER": {
+      "STATUS":"local server status",
+      "RUNNING":"running",
+      "STOPED":"stopped"
+    },
+    "MENU":{
+      "WELCOME":"welcome",
+      "EDITOR":"editor",
+      "VIEW":"view"
+    }
+  },
+  "EDITOR":{
+    "OPEN":"open",
+    "SAVE":"save",
+    "SAVEAS":"saveas",
+    "NEW":"new",
+    "NEW_LAYOUT":{
+      "DIALOG_TITLE":"new layout",
+      "LAYOUT_TITLE":"title",
+      "LAYOUT":"layout(put your setting if you really need to change it)",
+      "DEFAULT_LAYOUT":"revert to default layout"
+    }
+  }
+}

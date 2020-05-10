@@ -1,0 +1,11 @@
+<app-header (toggleSidebarForMe)="sidebarToggler()"></app-header>
+<mat-progress-bar *ngIf="loading" color="accent" mode="indeterminate"></mat-progress-bar>
+<mat-drawer-container #container fxFlex fxLayout="row">
+    <mat-drawer #sidebar fxFlex="20" mode="side" [opened]="sidebarOpen">
+        <app-sidebar></app-sidebar>
+    </mat-drawer>
+    <mat-drawer-content #main fxFlex>
+        <router-outlet></router-outlet>
+    </mat-drawer-content>
+</mat-drawer-container>
+<app-footer></app-footer>

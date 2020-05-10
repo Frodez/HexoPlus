@@ -1,0 +1,38 @@
+<mat-nav-list>
+  <div class="profile-card">
+      <ng-container *ngIf="hexoConfig.hasHexo; else elseTemplate">
+        <div class="header">
+          <h2>{{hexoConfig.hexo.title}}</h2>
+          <h4>{{hexoConfig.hexo.author}}</h4>
+          <h5>{{('SIDEBAR.LOCAL_SERVER.STATUS' | translate) + ': ' + ((hexoConfig.hexoShell.isServed ? 'SIDEBAR.LOCAL_SERVER.RUNNING' : 'SIDEBAR.LOCAL_SERVER.STOPED') | translate)}}</h5>
+        </div>
+        <button mat-button (click)="hexoConfig.loadFile()">{{'SIDEBAR.LOADED.CHANGE' | translate}}</button>
+        <button mat-button (click)="hexoConfig.refreshFile()">{{'SIDEBAR.LOADED.REFRESH' | translate}}</button>
+        <button mat-button (click)="hexoConfig.clear()">{{'SIDEBAR.LOADED.CLEAR' | translate}}</button>
+        <button mat-button (click)="hexoConfig.run()">{{'SIDEBAR.LOADED.SERVE' | translate}}</button>
+        <button mat-button (click)="hexoConfig.stop()">{{'SIDEBAR.LOADED.STOP' | translate}}</button>
+        <button mat-button (click)="hexoConfig.clear()">{{'SIDEBAR.LOADED.CLEAR' | translate}}</button>
+      </ng-container>
+      <ng-template #elseTemplate>
+        <button mat-button (click)="hexoConfig.loadFile()">{{'SIDEBAR.UNLOADED.LOAD' | translate}}</button>
+        <button mat-button (click)="hexoConfig.init()">{{'SIDEBAR.UNLOADED.INIT' | translate}}</button>
+      </ng-template>
+  </div>
+  <mat-divider></mat-divider>
+  <mat-list style="padding-top: 0px;">
+    <mat-list-item>
+      <a mat-list-item routerLinkActive="list-item-active" routerLink="/welcome">{{'SIDEBAR.MENU.WELCOME' | translate}}</a>
+      <mat-divider></mat-divider>
+    </mat-list-item>
+    <div *ngIf="hexoConfig.hasHexo">
+      <mat-list-item>
+        <a mat-list-item routerLinkActive="list-item-active" routerLink="/edit">{{'SIDEBAR.MENU.EDITOR' | translate}}</a>
+        <mat-divider></mat-divider>
+      </mat-list-item>
+      <mat-list-item *ngIf="hexoConfig.hexoShell.isServed">
+        <a mat-list-item routerLinkActive="list-item-active" routerLink="/view">{{'SIDEBAR.MENU.VIEW' | translate}}</a>
+        <mat-divider></mat-divider>
+      </mat-list-item>
+    </div>
+  </mat-list>
+</mat-nav-list>

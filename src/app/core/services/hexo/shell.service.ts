@@ -1,14 +1,10 @@
 import { Injectable } from "@angular/core";
-import { ElectronService } from "../electron/electron.service";
-
-import { ChildProcess, exec, execSync } from "child_process";
+import { exec } from "child_process";
 import * as Shell from "shelljs";
-
-import { threadKill, portKill } from "../../../shared/utils/thread";
+import { portKill } from "../../../shared/utils/thread";
 import { validPort } from "../../../shared/utils/validPort";
-
 import { ConfigService } from "../config/config.service";
-import { Router } from "@angular/router";
+import { ElectronService } from "../electron/electron.service";
 
 @Injectable({
   providedIn: "root",

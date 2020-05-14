@@ -8,8 +8,8 @@ import { ConfigService } from '../config/config.service';
 import { AppDataService } from '../config/data.service';
 import { ElectronService } from '../electron/electron.service';
 import { HexoShellService } from './shell.service';
-
-
+import { Server } from 'net';
+let Hexo = require('hexo/lib/hexo/index.js');
 
 @Injectable({
   providedIn: 'root'
@@ -17,6 +17,12 @@ import { HexoShellService } from './shell.service';
 export class HexoService {
 
   store: ElectronStore = new ElectronStore();
+
+  hexoContext: any;
+
+  runServer:(args: any) => Promise<any>;
+
+  server: Server;
 
   constructor(private electronService: ElectronService, public hexoShell: HexoShellService, private configService: ConfigService, public dataService: AppDataService) {
     this.refreshFile();
@@ -48,6 +54,15 @@ export class HexoService {
   }
 
   private loadConfig(location: string, hexoConfig?: any) {
+    this.hexoContext = new Hexo(this.genRootPath(location));
+    this.hexoContext.extend.filter.register('server_middleware', require('hexo-server/lib/middlewares/header'));
+    this.hexoContext.extend.filter.register('server_middleware', require('hexo-server/lib/middlewares/gzip'));
+    this.hexoContext.extend.filter.register('server_middleware', require('hexo-server/lib/middlewares/logger'));
+    this.hexoContext.extend.filter.register('server_middleware', require('hexo-server/lib/middlewares/route'));
+    this.hexoContext.extend.filter.register('server_middleware', require('hexo-server/lib/middlewares/static'));
+    this.hexoContext.extend.filter.register('server_middleware', require('hexo-server/lib/middlewares/redirect'));
+    this.hexoContext.init();
+    this.runServer = require('hexo-server/lib/server.js').bind(this.hexoContext);
     try {
       if(!this.validateFilePath(location)) {
         this.electronService.error('ERROR.LOADING_CONFIG');
@@ -162,16 +177,34 @@ export class HexoService {
   }
 
   run() {
+    const args = {ip: this.configService.config.defaultServerPort};
+    //debugger;
+    this.runServer(args).then((app)=> {
+      this.hexoShell.isServed = true;
+      this.electronService.success('SUCCESS.OPERATE');
+      this.server = app;
+    }).catch((err: any)=> {
+      console.error(err);
+      this.hexoShell.isServed = false;
+      this.electronService.error(err);
+    });
+    /*
     this.hexoShell.run(this.rootPath);
     setTimeout(() => {
       if(this.hexoShell.isServed) {
         this.electronService.success('SUCCESS.OPERATE');
       }
     }, 500);
+    */
   }
 
   stop() {
-    this.hexoShell.stop();
+    if(this.server) {
+      this.server.unref();
+      this.server.close();
+      this.hexoShell.isServed = false;
+    }
+    //this.hexoShell.stop();
     this.dataService.persist();
   }
 

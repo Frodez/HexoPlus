@@ -1,4 +1,4 @@
-<div *ngIf="hexoService.hasHexo" fxFlex fxLayout="column">
+<div *ngIf="hexoService.hexoContext" fxFlex fxLayout="column">
   <mat-toolbar fxFlex>
     <mat-toolbar-row fxFlex fxLayout="row" fxLayoutAlign.lt-md>
       <span fxFlex *ngIf="currentFile">{{currentFile}}</span>

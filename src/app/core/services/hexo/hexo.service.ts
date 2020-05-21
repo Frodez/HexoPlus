@@ -1,15 +1,14 @@
 import { Injectable } from '@angular/core';
 import { execSync } from 'child_process';
 import * as ElectronStore from 'electron-store';
-import { readFileSync } from 'fs';
-import { load } from 'js-yaml';
-import { extname, join } from 'path';
+import { Server } from 'net';
+import { join, dirname } from 'path';
 import { ConfigService } from '../config/config.service';
 import { AppDataService } from '../config/data.service';
 import { ElectronService } from '../electron/electron.service';
-import { HexoShellService } from './shell.service';
-import { Server } from 'net';
-let Hexo = require('hexo/lib/hexo/index.js');
+import PathUtils from '../../../shared/utils/path';
+import decompress from 'decompress';
+const Hexo = require('hexo/lib/hexo/index.js');
 
 @Injectable({
   providedIn: 'root'
@@ -20,41 +19,42 @@ export class HexoService {
 
   hexoContext: any;
 
-  runServer:(args: any) => Promise<any>;
+  runServer:(args: any) => Promise<Server>;
 
   server: Server;
 
-  constructor(private electronService: ElectronService, public hexoShell: HexoShellService, private configService: ConfigService, public dataService: AppDataService) {
+  constructor(private electronService: ElectronService, private configService: ConfigService, public dataService: AppDataService) {
     this.refreshFile();
   }
 
-  loadFile(): void {
-    this.electronService.readFilesAsStringByDialog({
-      defaultPath: this.rootPath,
-      filters:[
-        {name: 'yaml configuration', extensions: ['yml', 'yaml']
-      }]
-    }).then((value) => {
-      if(value.length != 1) {
-        this.electronService.error('ERROR.ONLY_ONE_FILE');
+  async loadContext(): Promise<void> {
+    try {
+      const value = await this.electronService.remote.dialog.showOpenDialog({
+        defaultPath: this.electronService.remote.app.getAppPath(),
+        properties: ['openDirectory']
+      });
+      if(!value.canceled) {
+        if(!value.filePaths || value.filePaths.length != 1) {
+          this.electronService.error('ERROR.ONLY_ONE_FILE');
+          return;
+        }
+        this.loadConfig(value.filePaths[0]);
+        this.store.set('hexo-config-location', value.filePaths[0]);
+        console.log(this.hexoContext);
       }
-      this.loadConfig(value[0].file, value[0].data);
-    }).catch((reason) => {
-      if(reason) {
-        console.error(reason);
-        this.electronService.error(reason);
-      }
-    });
+    } catch(error) {
+      this.electronService.error(error);
+    }
   }
 
   refreshFile(): void {
-    if(this.hasHexo) {
+    if(!this.hexoContext) {
       this.loadConfig(this.store.get('hexo-config-location'));
     }
   }
 
-  private loadConfig(location: string, hexoConfig?: any) {
-    this.hexoContext = new Hexo(this.genRootPath(location));
+  private loadConfig(location: string) {
+    this.hexoContext = new Hexo(location);
     this.hexoContext.extend.filter.register('server_middleware', require('hexo-server/lib/middlewares/header'));
     this.hexoContext.extend.filter.register('server_middleware', require('hexo-server/lib/middlewares/gzip'));
     this.hexoContext.extend.filter.register('server_middleware', require('hexo-server/lib/middlewares/logger'));
@@ -63,149 +63,81 @@ export class HexoService {
     this.hexoContext.extend.filter.register('server_middleware', require('hexo-server/lib/middlewares/redirect'));
     this.hexoContext.init();
     this.runServer = require('hexo-server/lib/server.js').bind(this.hexoContext);
-    try {
-      if(!this.validateFilePath(location)) {
-        this.electronService.error('ERROR.LOADING_CONFIG');
-        return;
-      }
-      const data = hexoConfig ? load(hexoConfig) : load(readFileSync(location).toString());
-      if(!this.validateConfig(data)) {
-        this.electronService.error('ERROR.LOADING_CONFIG');
-        return;
-      }
-      this.store.set('hexo-config', data);
-      this.store.set('hexo-config-location', location);
-    } catch(e) {
-      console.error(e);
-      this.electronService.error(e);
-    }
   }
 
   clear(): void {
+    this.stop();
+    this.hexoContext = null;
+    this.runServer = null;
     this.store.delete('hexo-config-location');
-    this.store.delete('hexo-config');
-  }
-
-  validateFilePath(file: string): boolean {
-    try {
-      const affix = extname(file);
-      return affix === '.yaml' || affix === '.yml';
-    } catch(e) {
-      console.error(e);
-      return false;
-    }
-  }
-
-  validateConfig(data: any): boolean {
-    try {
-      if(!data.title) {
-        return false;
-      }
-      if(!data.author) {
-        return false;
-      }
-      if(!data.url) {
-        return false;
-      }
-      if(!data.root) {
-        return false;
-      }
-      if(!data.source_dir) {
-        return false;
-      }
-      if(!data.public_dir) {
-        return false;
-      }
-      return true;
-    } catch(e) {
-      console.error(e);
-      return false;
-    }
-  }
-
-  get hasHexo(): boolean {
-    return this.store.has('hexo-config-location') && this.store.has('hexo-config');
-  }
-
-  get hexo(): any {
-    return this.store.get('hexo-config');
-  }
-
-  get rootPath(): string {
-    return this.hasHexo ? this.genRootPath(this.store.get('hexo-config-location')) : undefined;
-  }
-
-  private genRootPath(configFilePath: string): string {
-    return configFilePath ? configFilePath.slice(0, configFilePath.lastIndexOf('\\')) : undefined;
   }
 
   get localUrl() {
-    let url = this.hexo.url as string;
+    let url = this.hexoContext.config.url as string;
     const protocol = url.slice(0, url.indexOf(':'));
-    return protocol + '://localhost:' + this.configService.config.defaultServerPort + this.hexo.root;
+    return protocol + '://127.0.0.1:' + this.configService.config.defaultServerPort + this.hexoContext.config.root;
   }
 
-  init() {
-    this.electronService.remote.dialog.showOpenDialog({
-      defaultPath: this.rootPath,
-      properties: ['openDirectory']
-    }).then((value)=> {
+  async init() {
+    try {
+      const value = await this.electronService.remote.dialog.showOpenDialog({
+        defaultPath: this.electronService.remote.app.getAppPath(),
+        properties: ['openDirectory']
+      });
       if(!value.canceled) {
         if(!value.filePaths || value.filePaths.length != 1) {
           this.electronService.error('ERROR.ONLY_ONE_FILE');
           return;
         }
-        execSync('hexo init '+ value.filePaths[0]);
-        if(this.configService.config.initAndLoad) {
-          const configFilePath = join(value.filePaths[0], '_config.yml');
-          this.loadConfig(configFilePath);
-        }
+        const resource = PathUtils.resolvePath('init.zip');
+        debugger;
+        await decompress(resource, value.filePaths[0]);
+        this.electronService.success('SUCCESS.OPERATE');
       }
-    });
+    } catch(error) {
+      console.log(error);
+      this.electronService.error(error);
+    }
   }
 
-  getLayoutPath(rootPath: string, layout: string) {
-    let path = rootPath;
-    if(layout == 'page') {
-      path = join(path, this.hexo.source_dir);
-    } else if(layout == 'draft') {
-      path = join(path, this.hexo.source_dir, '_drafts');
-    } else {
-      path = join(path, this.hexo.source_dir, '_posts');
+  getLayoutPath(layout: string) {
+    let path = this.hexoContext.source_dir;
+    if(layout == 'draft') {
+      path = join(path, '_drafts');
+    } else if(layout != 'page') {
+      path = join(path, '_posts');
     }
     return path;
   }
 
-  run() {
-    const args = {ip: this.configService.config.defaultServerPort};
-    //debugger;
-    this.runServer(args).then((app)=> {
-      this.hexoShell.isServed = true;
-      this.electronService.success('SUCCESS.OPERATE');
+  async run() {
+    try {
+      const args = {
+        ip: this.configService.config.defaultServerPort
+      };
+      const app = await this.runServer(args);
       this.server = app;
-    }).catch((err: any)=> {
-      console.error(err);
-      this.hexoShell.isServed = false;
-      this.electronService.error(err);
-    });
-    /*
-    this.hexoShell.run(this.rootPath);
-    setTimeout(() => {
-      if(this.hexoShell.isServed) {
-        this.electronService.success('SUCCESS.OPERATE');
-      }
-    }, 500);
-    */
+      this.electronService.success('SUCCESS.OPERATE');
+    } catch(error) {
+      this.electronService.error(error);
+    } finally {
+      window.dispatchEvent(new Event('resize'));//refresh the window
+    }
   }
 
   stop() {
     if(this.server) {
       this.server.unref();
-      this.server.close();
-      this.hexoShell.isServed = false;
+      this.server.close((err) => {
+        if(err) {
+          this.electronService.error(err);
+        } else {
+          this.server = null;
+          this.dataService.persist();
+        }
+      });
+      window.dispatchEvent(new Event('resize'));//refresh the window
     }
-    //this.hexoShell.stop();
-    this.dataService.persist();
   }
 
 }

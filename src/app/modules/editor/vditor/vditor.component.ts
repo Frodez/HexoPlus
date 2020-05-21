@@ -13,7 +13,7 @@ export class VditorComponent implements OnInit, OnDestroy, AfterViewInit {
 
   vditor: Vditor;
 
-  currentLang: string = '';
+  currentLang = '';
 
   set text(text: string) {
     if(this.vditor) {

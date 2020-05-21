@@ -4,6 +4,17 @@ import * as ElectronStore from 'electron-store';
 
 import { ConfigService } from './config.service';
 
+export class AppData {
+
+  public prevFile: {
+    file: string,
+    data: string
+  };
+
+  constructor() {}
+
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -11,7 +22,7 @@ export class AppDataService {
 
   private store: ElectronStore = new ElectronStore();
 
-  private appData : AppData;
+  private appData: AppData;
 
   constructor(private configService: ConfigService) {}
 
@@ -38,16 +49,5 @@ export class AppDataService {
   public setPrevFile(prevFile: {file: string, data: string}) {
     this.data.prevFile = prevFile;
   }
-
-}
-
-export class AppData {
-
-  public prevFile: {
-    file: string,
-    data: string
-  };
-
-  constructor() {}
 
 }

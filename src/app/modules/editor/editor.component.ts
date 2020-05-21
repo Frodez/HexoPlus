@@ -44,7 +44,7 @@ export class EditorComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngOnDestroy(): void {
-    const value = this.vditor.text;
+    const value = this.vditor?.text;
     this.appDataService.setPrevFile({file: this.currentFile, data: value});
     if(this.configService.config.autoSave) {
       if(this.currentFile) {
@@ -56,14 +56,14 @@ export class EditorComponent implements OnInit, OnDestroy, AfterViewInit {
 
   ngAfterViewInit(): void {
     const prevFile = this.appDataService.data.prevFile;
-    if(prevFile) {
+    if(prevFile && this.vditor) {
       this.vditor.text = prevFile.data;
     }
   }
 
   openLayout() {
     this.electronService.readFilesAsStringByDialog({
-      defaultPath: join(this.hexoService.rootPath, this.hexoService.hexo.source_dir),
+      defaultPath: this.hexoService.hexoContext.source_dir,
       filters:[{
         name: 'markdown files',
         extensions: ['md']
@@ -90,8 +90,8 @@ export class EditorComponent implements OnInit, OnDestroy, AfterViewInit {
       data: this.configService.config
     }).afterClosed().subscribe((result: {title: string; layout: string}) => {
       if(result) {
-        const path = this.hexoService.getLayoutPath(this.hexoService.rootPath, result.layout);
-        Shell.cd(this.hexoService.rootPath);
+        const path = this.hexoService.getLayoutPath(result.layout);
+        Shell.cd(this.hexoService.hexoContext.base_dir);
         const command = 'hexo new' + ' ' + result.layout + ' ' + result.title;
         exec(command, (error, stdout, stderr) => {
           if(error) {
@@ -126,7 +126,7 @@ export class EditorComponent implements OnInit, OnDestroy, AfterViewInit {
 
   saveAs() {
     this.electronService.remote.dialog.showSaveDialog({
-      defaultPath: join(this.hexoService.rootPath, this.hexoService.hexo.source_dir),
+      defaultPath: join(this.hexoService.hexoContext.base_dir, this.hexoService.hexoContext.source_dir),
       filters:[{
         name:'markdown files',
         extensions: ['md']

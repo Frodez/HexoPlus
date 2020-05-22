@@ -1,10 +1,7 @@
-import { app, BrowserWindow, screen, dialog, Menu, globalShortcut, ipcMain, remote } from 'electron';
+import { app, BrowserWindow, dialog, globalShortcut, ipcMain, Menu, remote, screen } from 'electron';
 import * as path from 'path';
 import * as url from 'url';
 import commandExists = require('command-exists');
-
-import { ConfigService } from './src/app/core/services/config/config.service';
-import { AppDataService } from './src/app/core/services/config/data.service';
 
 export let win: BrowserWindow = null;
 const args = process.argv.slice(1);
@@ -105,11 +102,6 @@ try {
     remote.dialog.showErrorBox('', 'before-quit');
   })
   app.on('quit', () => {
-    const configService = new ConfigService();
-    const appDataService = new AppDataService(configService);
-    if(configService.config.loadHistoryAppData) {
-      appDataService.persist();
-    }
     globalShortcut.unregisterAll();
   });
 
@@ -122,4 +114,5 @@ function bindKeys() {
   if(serve) {
     globalShortcut.register('ctrl+k', () => win.webContents.openDevTools());
   }
+  globalShortcut.register('ctrl+k', () => win.webContents.openDevTools());
 }

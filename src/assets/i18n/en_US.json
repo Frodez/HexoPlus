@@ -7,6 +7,7 @@
     "ONLY_ONE_FILE":"Only one file is needed here.",
     "ONLY_ONE_PATH":"Only one path is needed here.",
     "INVALID_PORT":"The port is invalid. Please check your setting or confirm that no program is occupying the port.",
+    "INVALID_PATH":"The path of file or folder is invalid.",
     "VALIDATE":{
       "REQUIRED":"There must exist data.",
       "MIN":"The number must be no less than {{min}}.",

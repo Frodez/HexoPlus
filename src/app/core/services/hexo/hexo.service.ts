@@ -1,15 +1,14 @@
 import { Injectable } from '@angular/core';
-import { execSync } from 'child_process';
 import * as ElectronStore from 'electron-store';
-import { readFileSync } from 'fs';
-import { load } from 'js-yaml';
-import { extname, join } from 'path';
+import { existsSync } from 'fs';
+import { Server } from 'net';
+import StreamZip from 'node-stream-zip';
+import { join } from 'path';
 import { ConfigService } from '../config/config.service';
 import { AppDataService } from '../config/data.service';
 import { ElectronService } from '../electron/electron.service';
-import { HexoShellService } from './shell.service';
-
-
+import { promisify } from 'util';
+const Hexo = require('hexo/lib/hexo/index.js');
 
 @Injectable({
   providedIn: 'root'
@@ -18,161 +17,155 @@ export class HexoService {
 
   store: ElectronStore = new ElectronStore();
 
-  constructor(private electronService: ElectronService, public hexoShell: HexoShellService, private configService: ConfigService, public dataService: AppDataService) {
+  hexoContext: any;
+
+  runServer:(args: any) => Promise<Server>;
+
+  server: Server;
+
+  constructor(private electronService: ElectronService, private configService: ConfigService, public dataService: AppDataService) {
     this.refreshFile();
   }
 
-  loadFile(): void {
-    this.electronService.readFilesAsStringByDialog({
-      defaultPath: this.rootPath,
-      filters:[
-        {name: 'yaml configuration', extensions: ['yml', 'yaml']
-      }]
-    }).then((value) => {
-      if(value.length != 1) {
-        this.electronService.error('ERROR.ONLY_ONE_FILE');
-      }
-      this.loadConfig(value[0].file, value[0].data);
-    }).catch((reason) => {
-      if(reason) {
-        console.error(reason);
-        this.electronService.error(reason);
-      }
-    });
-  }
-
   refreshFile(): void {
-    if(this.hasHexo) {
-      this.loadConfig(this.store.get('hexo-config-location'));
+    if(!this.hexoContext) {
+      const location = this.store.get('hexo-config-location');
+      if(location) {
+        this.loadConfig(location);
+      }
     }
   }
 
-  private loadConfig(location: string, hexoConfig?: any) {
+  async loadContext(): Promise<void> {
     try {
-      if(!this.validateFilePath(location)) {
-        this.electronService.error('ERROR.LOADING_CONFIG');
-        return;
-      }
-      const data = hexoConfig ? load(hexoConfig) : load(readFileSync(location).toString());
-      if(!this.validateConfig(data)) {
-        this.electronService.error('ERROR.LOADING_CONFIG');
-        return;
-      }
-      this.store.set('hexo-config', data);
-      this.store.set('hexo-config-location', location);
-    } catch(e) {
-      console.error(e);
-      this.electronService.error(e);
-    }
-  }
-
-  clear(): void {
-    this.store.delete('hexo-config-location');
-    this.store.delete('hexo-config');
-  }
-
-  validateFilePath(file: string): boolean {
-    try {
-      const affix = extname(file);
-      return affix === '.yaml' || affix === '.yml';
-    } catch(e) {
-      console.error(e);
-      return false;
-    }
-  }
-
-  validateConfig(data: any): boolean {
-    try {
-      if(!data.title) {
-        return false;
-      }
-      if(!data.author) {
-        return false;
-      }
-      if(!data.url) {
-        return false;
-      }
-      if(!data.root) {
-        return false;
-      }
-      if(!data.source_dir) {
-        return false;
-      }
-      if(!data.public_dir) {
-        return false;
-      }
-      return true;
-    } catch(e) {
-      console.error(e);
-      return false;
-    }
-  }
-
-  get hasHexo(): boolean {
-    return this.store.has('hexo-config-location') && this.store.has('hexo-config');
-  }
-
-  get hexo(): any {
-    return this.store.get('hexo-config');
-  }
-
-  get rootPath(): string {
-    return this.hasHexo ? this.genRootPath(this.store.get('hexo-config-location')) : undefined;
-  }
-
-  private genRootPath(configFilePath: string): string {
-    return configFilePath ? configFilePath.slice(0, configFilePath.lastIndexOf('\\')) : undefined;
-  }
-
-  get localUrl() {
-    let url = this.hexo.url as string;
-    const protocol = url.slice(0, url.indexOf(':'));
-    return protocol + '://localhost:' + this.configService.config.defaultServerPort + this.hexo.root;
-  }
-
-  init() {
-    this.electronService.remote.dialog.showOpenDialog({
-      defaultPath: this.rootPath,
-      properties: ['openDirectory']
-    }).then((value)=> {
+      const value = await this.electronService.remote.dialog.showOpenDialog({
+        defaultPath: this.electronService.remote.app.getAppPath(),
+        properties: ['openDirectory']
+      });
       if(!value.canceled) {
         if(!value.filePaths || value.filePaths.length != 1) {
           this.electronService.error('ERROR.ONLY_ONE_FILE');
           return;
         }
-        execSync('hexo init '+ value.filePaths[0]);
-        if(this.configService.config.initAndLoad) {
-          const configFilePath = join(value.filePaths[0], '_config.yml');
-          this.loadConfig(configFilePath);
-        }
+        this.loadConfig(value.filePaths[0]);
+        console.log(this.hexoContext);
       }
-    });
+    } catch(error) {
+      this.electronService.error(error);
+    }
   }
 
-  getLayoutPath(rootPath: string, layout: string) {
-    let path = rootPath;
-    if(layout == 'page') {
-      path = join(path, this.hexo.source_dir);
-    } else if(layout == 'draft') {
-      path = join(path, this.hexo.source_dir, '_drafts');
-    } else {
-      path = join(path, this.hexo.source_dir, '_posts');
+  private loadConfig(location: string) {
+    this.hexoContext = new Hexo(location);
+    this.hexoContext.extend.filter.register('server_middleware', require('hexo-server/lib/middlewares/header'));
+    this.hexoContext.extend.filter.register('server_middleware', require('hexo-server/lib/middlewares/gzip'));
+    this.hexoContext.extend.filter.register('server_middleware', require('hexo-server/lib/middlewares/logger'));
+    this.hexoContext.extend.filter.register('server_middleware', require('hexo-server/lib/middlewares/route'));
+    this.hexoContext.extend.filter.register('server_middleware', require('hexo-server/lib/middlewares/static'));
+    this.hexoContext.extend.filter.register('server_middleware', require('hexo-server/lib/middlewares/redirect'));
+    this.hexoContext.init();
+    this.runServer = require('hexo-server/lib/server.js').bind(this.hexoContext);
+    this.store.set('hexo-config-location', location);
+  }
+
+  clear(): void {
+    this.stop();
+    this.hexoContext = null;
+    this.runServer = null;
+    this.store.delete('hexo-config-location');
+  }
+
+  async init() {
+    try {
+      const value = await this.electronService.remote.dialog.showOpenDialog({
+        defaultPath: this.electronService.remote.app.getAppPath(),
+        properties: ['openDirectory']
+      });
+      if(!value.canceled) {
+        if(!value.filePaths || value.filePaths.length != 1) {
+          this.electronService.error('ERROR.ONLY_ONE_FILE');
+          return;
+        }
+        const resource = this.electronService.resourcePath('init.zip');
+        if(!existsSync(resource)) {
+          this.electronService.error('ERROR.INVALID_PATH');
+          return;
+        }
+        console.log(resource);
+        const zip = new StreamZip({
+          file: resource,
+          storeEntries: true
+        });
+        zip.on('ready', () => {
+          zip.extract(null, value.filePaths[0], (error: any) => {
+            if(error) {
+              console.error(error);
+              this.electronService.error(error);
+            } else {
+              console.log(value.filePaths[0]);
+              this.electronService.success('SUCCESS.OPERATE');
+            }
+            zip.close();
+          });
+        });
+      }
+    } catch(error) {
+      console.error(error);
+      this.electronService.error(error);
+    }
+  }
+
+  async run() {
+    try {
+      const args = {
+        ip: this.configService.config.defaultServerPort
+      };
+      const app = await this.runServer(args);
+      this.server = app;
+      this.electronService.success('SUCCESS.OPERATE');
+    } catch(error) {
+      this.electronService.error(error);
+    } finally {
+      window.dispatchEvent(new Event('resize'));//refresh the window
+    }
+  }
+
+  async stop() {
+    if(this.server) {
+      try {
+        this.server.unref();
+        await promisify(this.server.close)();
+        this.server = null;
+        this.dataService.persist();
+      } catch (error) {
+        this.electronService.error(error);
+      } finally {
+        window.dispatchEvent(new Event('resize'));//refresh the window
+      }
+    }
+  }
+
+  async createArticle(title: string, layout?: string) {
+    return this.hexoContext.post.create({title, layout}) as Promise<{
+      path: string,
+      content: string
+    }>;
+  }
+
+  get localUrl() {
+    let url: string = this.hexoContext.config.url;
+    const protocol = url.slice(0, url.indexOf(':'));
+    return protocol + '://127.0.0.1:' + this.configService.config.defaultServerPort + this.hexoContext.config.root;
+  }
+
+  getLayoutPath(layout: string): string {
+    let path: string = this.hexoContext.source_dir;
+    if(layout == 'draft') {
+      path = join(path, '_drafts');
+    } else if(layout != 'page') {
+      path = join(path, '_posts');
     }
     return path;
-  }
-
-  run() {
-    this.hexoShell.run(this.rootPath);
-    setTimeout(() => {
-      if(this.hexoShell.isServed) {
-        this.electronService.success('SUCCESS.OPERATE');
-      }
-    }, 500);
-  }
-
-  stop() {
-    this.hexoShell.stop();
-    this.dataService.persist();
   }
 
 }

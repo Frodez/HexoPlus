@@ -2,6 +2,25 @@ import { Injectable } from '@angular/core';
 
 import * as ElectronStore from 'electron-store';
 
+export const langs: string[] = ['zh_CN', 'en_US'];
+
+export class Config {
+  public defaultLang: string;
+  public autoSave: boolean;
+  public initAndLoad: boolean;
+  public loadHistoryAppData: boolean;
+  public defaultServerPort: number;
+  public defaultLayout: string;
+  public static default: Config = {
+    defaultLang: 'zh_CN',
+    autoSave: true,
+    initAndLoad: false,
+    loadHistoryAppData: false,
+    defaultServerPort: 4000,
+    defaultLayout: 'post'
+  }
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -32,23 +51,4 @@ export class ConfigService {
     this.store.delete('config');
   }
 
-}
-
-export const langs: string[] = ['zh_CN', 'en_US'];
-
-export class Config {
-  public defaultLang: string;
-  public autoSave: boolean;
-  public initAndLoad: boolean;
-  public loadHistoryAppData: boolean;
-  public defaultServerPort: number;
-  public defaultLayout: string;
-  public static default: Config = {
-    defaultLang: 'zh_CN',
-    autoSave: true,
-    initAndLoad: false,
-    loadHistoryAppData: false,
-    defaultServerPort: 4000,
-    defaultLayout: 'post'
-  }
 }

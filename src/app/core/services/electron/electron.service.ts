@@ -9,6 +9,7 @@ import { readFileSync } from 'fs';
 import { TranslateService } from '@ngx-translate/core';
 
 import { ToastrService } from 'ngx-toastr';
+import { dirname, join } from 'path';
 
 @Injectable({
   providedIn: 'root'
@@ -35,7 +36,7 @@ export class ElectronService {
     }
   }
 
-  async readFilesAsStringByDialog(options?:Electron.OpenDialogOptions): Promise<Array<{file: string, data: string}>> {
+  async readFilesAsStringByDialog(options?: Electron.OpenDialogOptions): Promise<Array<{file: string, data: string}>> {
     try {
       if(options) {
         options.properties = ['openFile'];
@@ -60,7 +61,9 @@ export class ElectronService {
   }
 
   error(errorMsg: any): void {
-    if(typeof(errorMsg) === 'string') {
+    if(!errorMsg) {
+      this.toastr.error('');
+    } else if(typeof(errorMsg) === 'string') {
       this.translateService.get(errorMsg as string).subscribe((res) => {
         this.toastr.error(res);
       },(error) => {
@@ -74,7 +77,9 @@ export class ElectronService {
   }
 
   success(message: any): void {
-    if(typeof(message) === 'string') {
+    if(!message) {
+      this.toastr.success('');
+    } else if(typeof(message) === 'string') {
       this.translateService.get(message as string).subscribe((res) => {
         this.toastr.success(res);
       },(error) => {
@@ -88,7 +93,9 @@ export class ElectronService {
   }
 
   info(message: any): void {
-    if(typeof(message) === 'string') {
+    if(!message) {
+      this.toastr.info('');
+    } else if(typeof(message) === 'string') {
       this.translateService.get(message as string).subscribe((res) => {
         this.toastr.info(res);
       },(error) => {
@@ -99,6 +106,14 @@ export class ElectronService {
     } else {
       this.toastr.info(message.toString());
     }
+  }
+
+  resourcePath(relativePath: string): string {
+    let dir = this.remote.app.getAppPath();
+    if(this.remote.app.isPackaged) {
+      dir = dirname(dir);
+    }
+    return join(dir, 'static', relativePath);
   }
 
 }

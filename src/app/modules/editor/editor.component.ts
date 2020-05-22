@@ -1,26 +1,28 @@
-import { Component, OnInit, ViewChild, ElementRef, AfterViewInit, OnDestroy, AfterViewChecked } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
-import { VditorComponent } from './vditor/vditor.component';
-import { HexoService } from '../../core/services/hexo/hexo.service'
+import { writeFile, writeFileSync } from 'fs';
+import { dirname, join } from 'path';
 import { ConfigService } from '../../core/services/config/config.service';
 import { AppDataService } from '../../core/services/config/data.service';
 import { ElectronService } from '../../core/services/electron/electron.service';
-import { writeFile, readFileSync, readFile, writeFileSync } from 'fs';
-import { join } from 'path';
-import { MatDialog } from '@angular/material/dialog';
+import { HexoService } from '../../core/services/hexo/hexo.service';
 import { NewLayoutComponent } from './new-layout/new-layout.component';
-import * as Shell from "shelljs";
-import { exec } from 'child_process';
+import { VditorComponent } from './vditor/vditor.component';
+import { promisify } from 'util';
 
 @Component({
   selector: 'app-editor',
   templateUrl: './editor.component.html'
 })
 export class EditorComponent implements OnInit, OnDestroy, AfterViewInit {
+
+  private write = promisify(writeFile);
+
   currentFile: string;
 
   get isDraft() {
-    return this.currentFile && this.currentFile.indexOf('drafts') !== -1;
+    return this.currentFile && dirname(this.currentFile).indexOf('drafts') !== -1;
   }
 
   @ViewChild('container') container: ElementRef;
@@ -61,95 +63,84 @@ export class EditorComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
-  openLayout() {
-    this.electronService.readFilesAsStringByDialog({
-      defaultPath: this.hexoService.hexoContext.source_dir,
-      filters:[{
-        name: 'markdown files',
-        extensions: ['md']
-      }]
-    }).then((value) => {
-      if(value.length != 1) {
+  async openLayout() {
+    try {
+      const files = await this.electronService.readFilesAsStringByDialog({
+        defaultPath: this.hexoService.hexoContext.source_dir,
+        filters:[{
+          name: 'markdown files',
+          extensions: ['md']
+        }]
+      });
+      if(files.length != 1) {
         this.electronService.error('ERROR.ONLY_ONE_FILE');
         return;
       }
-      this.currentFile = value[0].file;
-      this.vditor.text = value[0].data;
+      this.currentFile = files[0].file;
+      this.vditor.text = files[0].data;
+    } catch (error) {
+      this.electronService.error(error);
+    } finally {
       window.dispatchEvent(new Event('resize'));//refresh the window
-    }).catch((reason) => {
-      if(reason) {
-        this.electronService.error(reason);
-      }
-    });
-  }
-
-  newLayout() {
-    this.dialog.open(NewLayoutComponent, {
-      width: '50%',
-      disableClose: true,
-      data: this.configService.config
-    }).afterClosed().subscribe((result: {title: string; layout: string}) => {
-      if(result) {
-        const path = this.hexoService.getLayoutPath(result.layout);
-        Shell.cd(this.hexoService.hexoContext.base_dir);
-        const command = 'hexo new' + ' ' + result.layout + ' ' + result.title;
-        exec(command, (error, stdout, stderr) => {
-          if(error) {
-            this.electronService.error(error);
-            return;
-          }
-          if(stdout) {
-            const filePath = stdout.slice(stdout.indexOf(':') + 2).trim();
-            const value = readFileSync(filePath).toString();
-            this.vditor.text = value;
-            this.currentFile = filePath;
-            window.dispatchEvent(new Event('resize'));//refresh the window
-          }
-        });
-      }
-    })
-  }
-
-  save() {
-    if(this.currentFile) {
-      const value = this.vditor.text;
-      console.log(value);
-      writeFile(this.currentFile, value, (error)=> {
-        if(error) {
-          this.electronService.error(error);
-        } else {
-          this.electronService.success('SUCCESS.OPERATE')
-        }
-      });
     }
   }
 
-  saveAs() {
-    this.electronService.remote.dialog.showSaveDialog({
-      defaultPath: join(this.hexoService.hexoContext.base_dir, this.hexoService.hexoContext.source_dir),
-      filters:[{
-        name:'markdown files',
-        extensions: ['md']
-      }]
-    }).then((value) => {
-      if(!value.canceled) {
-        writeFile(value.filePath, this.vditor.text, (error)=> {
-          if(error) {
-            this.electronService.error(error);
-          } else {
-            this.electronService.success('SUCCESS.OPERATE')
-          }
-        });
+  async newLayout() {
+    const result: {title: string, layout: string} = await this.dialog.open(NewLayoutComponent, {
+      width: '50%',
+      disableClose: true,
+      data: this.configService.config
+    }).afterClosed().toPromise();
+    if(result) {
+      try {
+        const file = await this.hexoService.createArticle(result.title, result.layout);
+        this.vditor.text = file.content;
+        this.currentFile = file.path;
+      } catch (error) {
+        this.electronService.error(error);
+      } finally {
+        window.dispatchEvent(new Event('resize'));//refresh the window
       }
-    }).catch((reason) => {
-      if(reason) {
-        this.electronService.error(reason);
+    }
+  }
+
+  async save() {
+    if(this.currentFile) {
+      const value = this.vditor.text;
+      console.log(value);
+      try {
+        await this.write(this.currentFile, value);
+        this.electronService.success('SUCCESS.OPERATE');
+      } catch (error) {
+        this.electronService.error(error);
+      } finally {
+        window.dispatchEvent(new Event('resize'));//refresh the window
       }
-    });
+    }
+  }
+
+  async saveAs() {
+    try {
+      const res = await this.electronService.remote.dialog.showSaveDialog({
+        defaultPath: join(this.hexoService.hexoContext.base_dir, this.hexoService.hexoContext.source_dir),
+        filters:[{
+          name:'markdown files',
+          extensions: ['md']
+        }]
+      });
+      if(!res.canceled) {
+        await this.write(res.filePath, this.vditor.text);
+        this.electronService.success('SUCCESS.OPERATE');
+      }
+    } catch (error) {
+      this.electronService.error(error);
+    } finally {
+      window.dispatchEvent(new Event('resize'));//refresh the window
+    }
   }
 
   publish() {
-
+    //TODO
   }
 
 }

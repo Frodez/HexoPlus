@@ -108,4 +108,12 @@ export class ElectronService {
     }
   }
 
+  resourcePath(relativePath: string): string {
+    let dir = this.remote.app.getAppPath();
+    if(this.remote.app.isPackaged) {
+      dir = dirname(dir);
+    }
+    return join(dir, 'static', relativePath);
+  }
+
 }

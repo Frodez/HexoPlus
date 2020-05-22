@@ -24,7 +24,7 @@
   "win": {
     "icon": "dist/assets/icons",
     "target": [
-      "portable"
+      "nsis"
     ]
   },
   "mac": {
@@ -38,5 +38,10 @@
     "target": [
       "AppImage"
     ]
+  },
+  "nsis": {
+    "oneClick": false,
+    "allowElevation": true,
+    "allowToChangeInstallationDirectory": true
   }
 }

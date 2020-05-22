@@ -7,6 +7,7 @@
     "ONLY_ONE_FILE":"只需要一个文件.",
     "ONLY_ONE_PATH":"只需要一个文件夹路径.",
     "INVALID_PORT":"端口不可用.请检查您的设置,或者确认没有任何程序占用该端口.",
+    "INVALID_PATH":"不是一个合法的文件或者文件夹路径.",
     "VALIDATE":{
       "REQUIRED":"必须存在数据.",
       "MIN":"数字不得小于{{min}}.",

@@ -81,15 +81,6 @@ const MODULES: Array<Type<any> | ModuleWithProviders<{}> | any[]> = [
   OverlayModule,
   FlexLayoutModule,
   ToastrModule.forRoot(),
-  NgCircleProgressModule.forRoot({
-    maxPercent: 100,
-    radius: 100,
-    outerStrokeWidth: 16,
-    innerStrokeWidth: 8,
-    outerStrokeColor: "#78C000",
-    innerStrokeColor: "#C7E596",
-    animationDuration: 300
-  }),
   RouterModule
 ];
 

@@ -131,6 +131,8 @@ export class HexoService {
     } catch(error) {
       console.error(error);
       this.uiService.error(error);
+    } finally {
+      window.dispatchEvent(new Event('resize'));//refresh the window
     }
   }
 
@@ -139,6 +141,7 @@ export class HexoService {
    */
   async run() {
     try {
+      this.uiService.showOverlaySpinner();
       const args = {
         ip: this.configService.config.defaultServerPort
       };
@@ -146,8 +149,10 @@ export class HexoService {
       this.server = app;
       this.uiService.success('SUCCESS.OPERATE');
     } catch(error) {
+      console.error(error);
       this.uiService.error(error);
     } finally {
+      this.uiService.closeOverlaySpinner();
       window.dispatchEvent(new Event('resize'));//refresh the window
     }
   }
@@ -158,13 +163,16 @@ export class HexoService {
   async stop() {
     if(this.server) {
       try {
+        this.uiService.showOverlaySpinner();
         this.server.unref();
-        await promisify(this.server.close)();
+        this.server.close();
         this.server = null;
         this.dataService.persist();
       } catch (error) {
+        console.error(error);
         this.uiService.error(error);
       } finally {
+        this.uiService.closeOverlaySpinner();
         window.dispatchEvent(new Event('resize'));//refresh the window
       }
     }

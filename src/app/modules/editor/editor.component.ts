@@ -68,6 +68,7 @@ export class EditorComponent implements OnInit, OnDestroy, AfterViewInit {
 
   async openLayout() {
     try {
+      this.uiService.showOverlaySpinner();
       const files = await this.electronService.readFilesAsStringByDialog({
         defaultPath: this.hexoService.hexoContext.source_dir,
         filters:[{
@@ -82,8 +83,10 @@ export class EditorComponent implements OnInit, OnDestroy, AfterViewInit {
       this.currentFile = files[0].file;
       this.vditor.text = files[0].data;
     } catch (error) {
+      console.error(error);
       this.uiService.error(error);
     } finally {
+      this.uiService.closeOverlaySpinner();
       window.dispatchEvent(new Event('resize'));//refresh the window
     }
   }
@@ -96,12 +99,15 @@ export class EditorComponent implements OnInit, OnDestroy, AfterViewInit {
     }).afterClosed().toPromise();
     if(result) {
       try {
+        this.uiService.showOverlaySpinner();
         const file = await this.hexoService.createArticle(result.title, result.layout);
         this.vditor.text = file.content;
         this.currentFile = file.path;
       } catch (error) {
+        console.error(error);
         this.uiService.error(error);
       } finally {
+        this.uiService.closeOverlaySpinner();
         window.dispatchEvent(new Event('resize'));//refresh the window
       }
     }
@@ -110,13 +116,15 @@ export class EditorComponent implements OnInit, OnDestroy, AfterViewInit {
   async save() {
     if(this.currentFile) {
       const value = this.vditor.text;
-      console.log(value);
       try {
+        this.uiService.showOverlaySpinner();
         await this.write(this.currentFile, value);
         this.uiService.success('SUCCESS.OPERATE');
       } catch (error) {
+        console.error(error);
         this.uiService.error(error);
       } finally {
+        this.uiService.closeOverlaySpinner();
         window.dispatchEvent(new Event('resize'));//refresh the window
       }
     }
@@ -124,6 +132,7 @@ export class EditorComponent implements OnInit, OnDestroy, AfterViewInit {
 
   async saveAs() {
     try {
+      this.uiService.showOverlaySpinner();
       const res = await this.electronService.remote.dialog.showSaveDialog({
         defaultPath: join(this.hexoService.hexoContext.base_dir, this.hexoService.hexoContext.source_dir),
         filters:[{
@@ -136,8 +145,10 @@ export class EditorComponent implements OnInit, OnDestroy, AfterViewInit {
         this.uiService.success('SUCCESS.OPERATE');
       }
     } catch (error) {
+      console.error(error);
       this.uiService.error(error);
     } finally {
+      this.uiService.closeOverlaySpinner();
       window.dispatchEvent(new Event('resize'));//refresh the window
     }
   }

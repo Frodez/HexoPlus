@@ -7,7 +7,7 @@
           <h5>{{('SIDEBAR.LOCAL_SERVER.STATUS' | translate) + ': ' + ((hexoConfig.server ? 'SIDEBAR.LOCAL_SERVER.RUNNING' : 'SIDEBAR.LOCAL_SERVER.STOPED') | translate)}}</h5>
         </div>
         <button mat-button (click)="hexoConfig.loadContext()">{{'SIDEBAR.LOADED.CHANGE' | translate}}</button>
-        <button mat-button (click)="hexoConfig.refreshFile()">{{'SIDEBAR.LOADED.REFRESH' | translate}}</button>
+        <button mat-button (click)="hexoConfig.refreshContext()">{{'SIDEBAR.LOADED.REFRESH' | translate}}</button>
         <button mat-button (click)="hexoConfig.clear()">{{'SIDEBAR.LOADED.CLEAR' | translate}}</button>
         <button mat-button (click)="hexoConfig.run()">{{'SIDEBAR.LOADED.SERVE' | translate}}</button>
         <button mat-button (click)="hexoConfig.stop()">{{'SIDEBAR.LOADED.STOP' | translate}}</button>

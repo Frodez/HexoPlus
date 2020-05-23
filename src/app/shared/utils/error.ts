@@ -3,7 +3,11 @@ import { TranslateService } from '@ngx-translate/core';
 import { Observable, of } from 'rxjs';
 import { concatMap, map } from 'rxjs/operators';
 
-
+/**
+ * error管道的纯函数版本
+ * @param translateService
+ * @param errors
+ */
 export function transform(translateService: TranslateService, errors: ValidationErrors): Observable<string> {
   let ob: Observable<string> = of('');
   Object.keys(errors).forEach((key, index)=> {

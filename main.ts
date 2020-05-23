@@ -71,6 +71,8 @@ try {
   // Some APIs can only be used after this event occurs.
   // Added 400 ms to fix the black background issue while using transparent window. More detais at https://github.com/electron/electron/issues/15947
   app.on('ready', () => {
+    /*
+    由于整合了hexo，故不需要外部依赖
     commandExists('git').catch(()=>{
       dialog.showErrorBox('错误', '缺少git,请安装');
       app.quit();
@@ -79,6 +81,7 @@ try {
       dialog.showErrorBox('错误', '缺少hexo,请安装');
       app.quit();
     });
+    */
     setTimeout(createWindow, 400);
   });
 

@@ -36,6 +36,9 @@ export class ElectronService {
     }
   }
 
+  /**
+   * 打开对话框读取文件
+   */
   async readFilesAsStringByDialog(options?: Electron.OpenDialogOptions): Promise<Array<{file: string, data: string}>> {
     try {
       if(options) {
@@ -60,54 +63,10 @@ export class ElectronService {
     }
   }
 
-  error(errorMsg: any): void {
-    if(!errorMsg) {
-      this.toastr.error('');
-    } else if(typeof(errorMsg) === 'string') {
-      this.translateService.get(errorMsg as string).subscribe((res) => {
-        this.toastr.error(res);
-      },(error) => {
-        console.log(error);
-      });
-    } else if(errorMsg instanceof Error) {
-      this.toastr.error((errorMsg as Error).message);
-    } else {
-      this.toastr.error(errorMsg.toString());
-    }
-  }
-
-  success(message: any): void {
-    if(!message) {
-      this.toastr.success('');
-    } else if(typeof(message) === 'string') {
-      this.translateService.get(message as string).subscribe((res) => {
-        this.toastr.success(res);
-      },(error) => {
-        console.log(error);
-      });
-    } else if(message instanceof Error) {
-      this.toastr.success((message as Error).message);
-    } else {
-      this.toastr.success(message.toString());
-    }
-  }
-
-  info(message: any): void {
-    if(!message) {
-      this.toastr.info('');
-    } else if(typeof(message) === 'string') {
-      this.translateService.get(message as string).subscribe((res) => {
-        this.toastr.info(res);
-      },(error) => {
-        console.log(error);
-      });
-    } else if(message instanceof Error) {
-      this.toastr.info((message as Error).message);
-    } else {
-      this.toastr.info(message.toString());
-    }
-  }
-
+  /**
+   * 获取正确的资源路径(仅限于自带资源)
+   * @param relativePath
+   */
   resourcePath(relativePath: string): string {
     let dir = this.remote.app.getAppPath();
     if(this.remote.app.isPackaged) {

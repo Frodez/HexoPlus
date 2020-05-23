@@ -1,5 +1,11 @@
 import { ExecException, exec, spawn, ChildProcess } from "child_process";
 
+/**
+ * 关闭pid进程及其相关进程
+ * @param pid
+ * @param callback
+ * @param signal
+ */
 export function threadKill(pid: number, callback: (error: ExecException, stdout?: string, stderr?: string) => void = (err) => {
   if(err) {
     console.error(err);
@@ -87,6 +93,10 @@ function buildProcessTree(parentPid: number, tree: {[key:number]: Array<number>;
   });
 }
 
+/**
+ * 关闭和端口相关的所有进程
+ * @param port
+ */
 export function portKill(port: number) {
   const command = (process.platform == "win32" ? "netstat -ano | findstr " : "netstat -ntp | grep ") + ':' + port;
   console.log(command);

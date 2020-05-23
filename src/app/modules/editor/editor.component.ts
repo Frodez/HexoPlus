@@ -9,7 +9,9 @@ import { ElectronService } from '../../core/services/electron/electron.service';
 import { HexoService } from '../../core/services/hexo/hexo.service';
 import { NewLayoutComponent } from './new-layout/new-layout.component';
 import { VditorComponent } from './vditor/vditor.component';
+import { UIService } from '../../core/services/ui/ui.service';
 import { promisify } from 'util';
+
 
 @Component({
   selector: 'app-editor',
@@ -35,7 +37,8 @@ export class EditorComponent implements OnInit, OnDestroy, AfterViewInit {
     public dialog: MatDialog,
     public electronService: ElectronService,
     public configService: ConfigService,
-    public appDataService: AppDataService) {
+    public appDataService: AppDataService,
+    public uiService: UIService) {
     const prevFile = this.appDataService.data.prevFile;
     if(prevFile) {
       this.currentFile = prevFile.file;
@@ -73,13 +76,13 @@ export class EditorComponent implements OnInit, OnDestroy, AfterViewInit {
         }]
       });
       if(files.length != 1) {
-        this.electronService.error('ERROR.ONLY_ONE_FILE');
+        this.uiService.error('ERROR.ONLY_ONE_FILE');
         return;
       }
       this.currentFile = files[0].file;
       this.vditor.text = files[0].data;
     } catch (error) {
-      this.electronService.error(error);
+      this.uiService.error(error);
     } finally {
       window.dispatchEvent(new Event('resize'));//refresh the window
     }
@@ -97,7 +100,7 @@ export class EditorComponent implements OnInit, OnDestroy, AfterViewInit {
         this.vditor.text = file.content;
         this.currentFile = file.path;
       } catch (error) {
-        this.electronService.error(error);
+        this.uiService.error(error);
       } finally {
         window.dispatchEvent(new Event('resize'));//refresh the window
       }
@@ -110,9 +113,9 @@ export class EditorComponent implements OnInit, OnDestroy, AfterViewInit {
       console.log(value);
       try {
         await this.write(this.currentFile, value);
-        this.electronService.success('SUCCESS.OPERATE');
+        this.uiService.success('SUCCESS.OPERATE');
       } catch (error) {
-        this.electronService.error(error);
+        this.uiService.error(error);
       } finally {
         window.dispatchEvent(new Event('resize'));//refresh the window
       }
@@ -130,10 +133,10 @@ export class EditorComponent implements OnInit, OnDestroy, AfterViewInit {
       });
       if(!res.canceled) {
         await this.write(res.filePath, this.vditor.text);
-        this.electronService.success('SUCCESS.OPERATE');
+        this.uiService.success('SUCCESS.OPERATE');
       }
     } catch (error) {
-      this.electronService.error(error);
+      this.uiService.error(error);
     } finally {
       window.dispatchEvent(new Event('resize'));//refresh the window
     }

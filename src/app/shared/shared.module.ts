@@ -26,8 +26,11 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { FlexLayoutModule } from '@angular/flex-layout';
+import { OverlayModule, OverlayContainer, FullscreenOverlayContainer } from '@angular/cdk/overlay';
 import { ToastrModule } from 'ngx-toastr';
+import { NgCircleProgressModule } from 'ng-circle-progress';
 
 import { PageNotFoundComponent } from './components/';
 import { HeaderComponent } from './components/header/header.component';
@@ -74,8 +77,19 @@ const MODULES: Array<Type<any> | ModuleWithProviders<{}> | any[]> = [
   MatCheckboxModule,
   MatInputModule,
   MatProgressBarModule,
+  MatProgressSpinnerModule,
+  OverlayModule,
   FlexLayoutModule,
   ToastrModule.forRoot(),
+  NgCircleProgressModule.forRoot({
+    maxPercent: 100,
+    radius: 100,
+    outerStrokeWidth: 16,
+    innerStrokeWidth: 8,
+    outerStrokeColor: "#78C000",
+    innerStrokeColor: "#C7E596",
+    animationDuration: 300
+  }),
   RouterModule
 ];
 
@@ -94,6 +108,9 @@ const SHARES: Array<Type<any> | any[]> = [
 ];
 
 @NgModule({
+  providers: [{
+    provide: OverlayContainer, useClass: FullscreenOverlayContainer
+  }],
   declarations: SHARES,
   imports: MODULES,
   exports: [

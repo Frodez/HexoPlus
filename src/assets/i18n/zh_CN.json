@@ -76,9 +76,15 @@
     "SAVE":"保存",
     "SAVEAS":"另存为",
     "NEW":"新建",
+    "PUBLISH":"发布草稿",
     "NEW_LAYOUT":{
       "DIALOG_TITLE":"新文章",
       "LAYOUT_TITLE":"文章标题",
+      "LAYOUT":"文章布局(只有当你需要改变布局时才可以改变它)",
+      "DEFAULT_LAYOUT":"恢复到默认布局"
+    },
+    "PUBLISH_DRAFT":{
+      "DIALOG_TITLE":"发表草稿",
       "LAYOUT":"文章布局(只有当你需要改变布局时才可以改变它)",
       "DEFAULT_LAYOUT":"恢复到默认布局"
     }

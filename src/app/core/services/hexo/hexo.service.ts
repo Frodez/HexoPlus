@@ -191,6 +191,17 @@ export class HexoService {
   }
 
   /**
+   * 发表草稿
+   * @param layout
+   */
+  publishDraft(filename: string, layout?: string) {
+    return this.hexoContext.post.publish({slug: filename, layout}) as Promise<{
+      path: string,
+      content: string
+    }>;
+  }
+
+  /**
    * 获取服务本机地址
    */
   get localUrl() {

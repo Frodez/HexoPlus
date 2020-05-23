@@ -76,9 +76,15 @@
     "SAVE":"save",
     "SAVEAS":"saveas",
     "NEW":"new",
+    "PUBLISH":"publish draft",
     "NEW_LAYOUT":{
       "DIALOG_TITLE":"new layout",
       "LAYOUT_TITLE":"title",
+      "LAYOUT":"layout(put your setting if you really need to change it)",
+      "DEFAULT_LAYOUT":"revert to default layout"
+    },
+    "PUBLISH_DRAFT":{
+      "DIALOG_TITLE":"publish draft",
       "LAYOUT":"layout(put your setting if you really need to change it)",
       "DEFAULT_LAYOUT":"revert to default layout"
     }

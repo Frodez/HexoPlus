@@ -1,0 +1,17 @@
+<h1 style="text-align: center;" mat-dialog-title>{{'EDITOR.PUBLISH_DRAFT.DIALOG_TITLE' | translate}}</h1>
+<form [formGroup]="layoutForm">
+  <div style="padding-top: 32px; text-align: center;" fxLayout="row wrap" fxLayout.lt-sm="column" fxLayoutGap="20px" fxLayoutAlign="flex-start">
+    <div style="padding-bottom: 10px;" fxFlex="0 1 calc(50% - 20px)" fxFlex.lt-md="0 1 calc(100% - 20px)" fxFlex.lt-sm="100%" fxLayout="row wrap" fxLayout.lt-sm="column" fxLayoutGap="20px" fxLayoutAlign="flex-start">
+      <span fxFlex="100">{{'EDITOR.PUBLISH_DRAFT.LAYOUT' | translate}}</span>
+      <mat-form-field fxFlex="100">
+        <input fxFlex="100" formControlName="layout" matInput type="text" value="data.defaultLayout">
+        <mat-error fxFlex="100" *ngIf="layoutForm.get('layout').errors">{{layoutForm.get('layout').errors | errors | async}}</mat-error>
+      </mat-form-field>
+      <button mat-button fxFlex="100" (click)="layoutForm.get('layout').setValue(data.defaultLayout)">{{'EDITOR.PUBLISH_DRAFT.DEFAULT_LAYOUT' | translate}}</button>
+    </div>
+  </div>
+</form>
+<div style="padding-top: 32px;" mat-dialog-actions fxLayout fxLayoutAlign="center center">
+  <button type="button" style="font-size: 20px;" mat-button (click)="dialogRef.close()">{{'FORM.CANCEL' | translate}}</button>
+  <button type="submit" style="font-size: 20px;" mat-button (click)="confirm()" cdkFocusInitial>{{'FORM.CONFIRM' | translate}}</button>
+</div>

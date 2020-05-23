@@ -2,7 +2,7 @@ import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } fr
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { writeFile, writeFileSync } from 'fs';
-import { dirname, join } from 'path';
+import { dirname, join, basename } from 'path';
 import { ConfigService } from '../../core/services/config/config.service';
 import { AppDataService } from '../../core/services/config/data.service';
 import { ElectronService } from '../../core/services/electron/electron.service';
@@ -11,6 +11,7 @@ import { NewLayoutComponent } from './new-layout/new-layout.component';
 import { VditorComponent } from './vditor/vditor.component';
 import { UIService } from '../../core/services/ui/ui.service';
 import { promisify } from 'util';
+import { PublishDraftComponent } from './publish-draft/publish-draft.component';
 
 
 @Component({
@@ -67,15 +68,15 @@ export class EditorComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   async openLayout() {
+    const files = await this.electronService.readFilesAsStringByDialog({
+      defaultPath: this.hexoService.hexoContext.source_dir,
+      filters:[{
+        name: 'markdown files',
+        extensions: ['md']
+      }]
+    });
     try {
       this.uiService.showOverlaySpinner();
-      const files = await this.electronService.readFilesAsStringByDialog({
-        defaultPath: this.hexoService.hexoContext.source_dir,
-        filters:[{
-          name: 'markdown files',
-          extensions: ['md']
-        }]
-      });
       if(files.length != 1) {
         this.uiService.error('ERROR.ONLY_ONE_FILE');
         return;
@@ -132,7 +133,6 @@ export class EditorComponent implements OnInit, OnDestroy, AfterViewInit {
 
   async saveAs() {
     try {
-      this.uiService.showOverlaySpinner();
       const res = await this.electronService.remote.dialog.showSaveDialog({
         defaultPath: join(this.hexoService.hexoContext.base_dir, this.hexoService.hexoContext.source_dir),
         filters:[{
@@ -141,6 +141,7 @@ export class EditorComponent implements OnInit, OnDestroy, AfterViewInit {
         }]
       });
       if(!res.canceled) {
+        this.uiService.showOverlaySpinner();
         await this.write(res.filePath, this.vditor.text);
         this.uiService.success('SUCCESS.OPERATE');
       }
@@ -153,8 +154,26 @@ export class EditorComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
-  publish() {
-    //TODO
+  async publish() {
+    const layout: string = (await this.dialog.open(PublishDraftComponent, {
+      width: '50%',
+      disableClose: true,
+      data: this.configService.config
+    }).afterClosed().toPromise()).layout;
+    try {
+      this.uiService.showOverlaySpinner();
+      const filename = basename(this.currentFile, '.md');
+      console.log(filename);
+      const res = await this.hexoService.publishDraft(filename, layout);
+      this.vditor.text = res.content;
+      this.currentFile = res.path;
+    } catch (error) {
+      console.error(error);
+      this.uiService.error(error);
+    } finally {
+      this.uiService.closeOverlaySpinner();
+      window.dispatchEvent(new Event('resize'));//refresh the window
+    }
   }
 
 }

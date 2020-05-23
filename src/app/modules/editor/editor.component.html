@@ -6,7 +6,7 @@
       <button mat-button mat-icon-button color="primary" fxFlex (click)="openLayout()">{{'EDITOR.OPEN' | translate}}</button>
       <button mat-button mat-icon-button color="primary" fxFlex (click)="save()" *ngIf="currentFile">{{'EDITOR.SAVE' | translate}}</button>
       <button mat-button mat-icon-button color="primary" fxFlex (click)="saveAs()">{{'EDITOR.SAVEAS' | translate}}</button>
-      <button mat-button mat-icon-button color="primary" fxFlex (click)="publish()" *ngIf="isDraft">{{'EDITOR.SAVEAS' | translate}}</button>
+      <button mat-button mat-icon-button color="primary" fxFlex (click)="publish()" *ngIf="isDraft">{{'EDITOR.PUBLISH' | translate}}</button>
     </mat-toolbar-row>
   </mat-toolbar>
   <div fxFlex>

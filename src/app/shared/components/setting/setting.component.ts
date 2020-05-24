@@ -7,6 +7,7 @@ import { ElectronService } from '../../../core/services/electron/electron.servic
 import { transform } from '../../utils/error';
 import { TranslateService } from '@ngx-translate/core';
 import { UIService } from '../../../core/services/ui/ui.service';
+import { validPort, validPortForForm } from '../../utils/validPort';
 
 @Component({
   selector: 'app-setting',
@@ -31,18 +32,20 @@ export class SettingComponent implements OnInit {
       'autoSave': new FormControl(this.data.autoSave),
       'initAndLoad': new FormControl(this.data.initAndLoad),
       'loadHistoryAppData': new FormControl(this.data.loadHistoryAppData),
-      'defaultServerPort': new FormControl(this.data.defaultServerPort, [Validators.required, Validators.min(1025), Validators.max(32768)]),
+      'defaultServerPort': new FormControl(this.data.defaultServerPort, [Validators.required, Validators.min(1025), Validators.max(32768)], validPortForForm),
       'defaultLayout': new FormControl(this.data.defaultLayout, [Validators.required])
     });
   }
 
   confirm() {
+    console.log(this.configForm);
     if(this.configForm.valid) {
       this.dialogRef.close(this.configForm.value);
     } else {
       Object.keys(this.configForm.controls).forEach((key) => {
         const control = this.configForm.get(key);
         if(control.errors) {
+          console.log({key, value: control.errors});
           transform(this.translateService, control.errors).subscribe((value) => this.uiService.error(value));
         }
       })

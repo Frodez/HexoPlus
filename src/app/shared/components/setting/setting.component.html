@@ -30,11 +30,10 @@
           </mat-form-field>
         </div>
         <div style="padding-bottom: 10px;" fxFlex="0 1 calc(33.3% - 20px)" fxFlex.lt-md="0 1 calc(50% - 20px)"  fxLayout="row wrap" fxLayout.lt-sm="column" fxLayoutGap="20px" fxLayoutAlign="flex-start">
-          <span fxFlex="100">{{'SETTING.HEXO.DEFAULT_LAYOUT' | translate}}</span>
-          <mat-form-field fxFlex="100">
-            <input fxFlex formControlName="defaultLayout" matInput type="text" value="{{data.defaultLayout}}">
-            <mat-error *ngIf="configForm.get('defaultLayout').errors">{{configForm.get('defaultLayout').errors | errors | async}}</mat-error>
-          </mat-form-field>
+          <span fxFlex>{{'SETTING.HEXO.DEFAULT_LAYOUT' | translate}}</span>
+          <mat-select fxFlex formControlName="defaultLayout" >
+            <mat-option *ngFor="let item of ['post', 'page', 'draft']" [value]="item">{{item}}</mat-option>
+          </mat-select>
         </div>
       </div>
     </mat-tab>

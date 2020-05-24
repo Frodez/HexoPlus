@@ -6,6 +6,7 @@ import { SettingComponent } from '../setting/setting.component';
 import { ConfigService } from '../../../core/services/config/config.service';
 import { BrowserWindow } from 'electron';
 import { ElectronService } from '../../../core/services/electron/electron.service';
+import { HexoService } from '../../../core/services/hexo/hexo.service';
 
 @Component({
   selector: 'app-header',

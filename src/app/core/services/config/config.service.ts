@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 
 import * as ElectronStore from 'electron-store';
+import { HexoService } from '../hexo/hexo.service';
 
 export const langs: string[] = ['zh_CN', 'en_US'];
 
@@ -30,12 +31,8 @@ export class ConfigService {
 
   constructor() {}
 
-  private get hasConfig(): boolean {
-    return this.store.has('config');
-  }
-
   get config(): Config {
-    if(!this.hasConfig) {
+    if(!this.store.has('config')) {
       const config = Config.default;
       this.store.set('config', config);
       return config;

@@ -3,6 +3,7 @@ import {Component, Inject, OnInit} from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { Config } from '../../../core/services/config/config.service';
+import { HexoService } from '../../../core/services/hexo/hexo.service';
 
 @Component({
   selector: 'app-new-layout',
@@ -15,7 +16,7 @@ export class NewLayoutComponent implements OnInit {
     layout: string;
   };
 
-  constructor(public dialogRef: MatDialogRef<NewLayoutComponent>, @Inject(MAT_DIALOG_DATA) public data: Config) {
+  constructor(public dialogRef: MatDialogRef<NewLayoutComponent>, @Inject(MAT_DIALOG_DATA) public data: Config, public hexoService: HexoService) {
     this.response = {
       title: '',
       layout: data.defaultLayout

@@ -9,12 +9,10 @@
       </mat-form-field>
     </div>
     <div style="padding-bottom: 10px;" fxFlex="0 1 calc(50% - 20px)" fxFlex.lt-md="0 1 calc(100% - 20px)" fxFlex.lt-sm="100%" fxLayout="row wrap" fxLayout.lt-sm="column" fxLayoutGap="20px" fxLayoutAlign="flex-start">
-      <span fxFlex="100">{{'EDITOR.NEW_LAYOUT.LAYOUT' | translate}}</span>
-      <mat-form-field fxFlex="100">
-        <input fxFlex="100" formControlName="layout" matInput type="text" value="data.defaultLayout">
-        <mat-error fxFlex="100" *ngIf="layoutForm.get('layout').errors">{{layoutForm.get('layout').errors | errors | async}}</mat-error>
-      </mat-form-field>
-      <button mat-button fxFlex="100" (click)="layoutForm.get('layout').setValue(data.defaultLayout)">{{'EDITOR.NEW_LAYOUT.DEFAULT_LAYOUT' | translate}}</button>
+      <span >{{'EDITOR.NEW_LAYOUT.LAYOUT' | translate}}</span>
+      <mat-select fxFlex formControlName="layout" >
+        <mat-option *ngFor="let item of hexoService.layouts" [value]="item">{{item}}</mat-option>
+      </mat-select>
     </div>
   </div>
 </form>

@@ -11,7 +11,8 @@
     "VALIDATE":{
       "REQUIRED":"必须存在数据.",
       "MIN":"数字不得小于{{min}}.",
-      "MAX":"数字不得大于{{max}}."
+      "MAX":"数字不得大于{{max}}.",
+      "PORT_HAS_BEEN_USED": "端口已被占用,请选择其他可用端口."
     }
   },
   "FORM": {

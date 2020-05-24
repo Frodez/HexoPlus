@@ -11,7 +11,8 @@
     "VALIDATE":{
       "REQUIRED":"There must exist data.",
       "MIN":"The number must be no less than {{min}}.",
-      "MAX":"The number must be no more than {{max}}."
+      "MAX":"The number must be no more than {{max}}.",
+      "PORT_HAS_BEEN_USED": "The port has been used. Please select the another one."
     }
   },
   "FORM": {
@@ -43,7 +44,7 @@
       "LOAD_HISTORY_DATA":"load the history application data after the application opened"
     },
     "HEXO": {
-      "TAB": "hexo",
+      "TAB": "Hexo",
       "DEFAULT_PORT":"default port",
       "DEFAULT_LAYOUT":"the default layout when you create a new layout"
     }

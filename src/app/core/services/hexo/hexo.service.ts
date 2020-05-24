@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import * as ElectronStore from 'electron-store';
-import { existsSync } from 'fs';
+import { existsSync, readdirSync } from 'fs';
 import { Server } from 'net';
 import StreamZip from 'node-stream-zip';
 import { promisify } from 'util';
@@ -8,6 +8,8 @@ import { ConfigService } from '../config/config.service';
 import { AppDataService } from '../config/data.service';
 import { ElectronService } from '../electron/electron.service';
 import { UIService } from '../ui/ui.service';
+import { basename } from 'path';
+import { validPort } from '../../../shared/utils/validPort';
 const Hexo = require('hexo/lib/hexo/index.js');
 
 @Injectable({
@@ -54,7 +56,6 @@ export class HexoService {
           return;
         }
         this.setContext(value.filePaths[0]);
-        console.log(this.hexoContext);
       }
     } catch(error) {
       this.uiService.error(error);
@@ -70,7 +71,9 @@ export class HexoService {
     this.hexoContext.extend.filter.register('server_middleware', require('hexo-server/lib/middlewares/static'));
     this.hexoContext.extend.filter.register('server_middleware', require('hexo-server/lib/middlewares/redirect'));
     this.hexoContext.init();
+    console.log(this.hexoContext);
     this.runServer = require('hexo-server/lib/server.js').bind(this.hexoContext);
+    validPort(4200).then((value) => console.log(value));
     this.store.set('hexo-config-location', location);
   }
 
@@ -143,8 +146,9 @@ export class HexoService {
     try {
       this.uiService.showOverlaySpinner();
       const args = {
-        ip: this.configService.config.defaultServerPort
+        port: this.configService.config.defaultServerPort
       };
+      console.log(args);
       const app = await this.runServer(args);
       this.server = app;
       this.uiService.success('SUCCESS.OPERATE');
@@ -208,6 +212,10 @@ export class HexoService {
     let url: string = this.hexoContext.config.url;
     const protocol = url.slice(0, url.indexOf(':'));
     return protocol + '://127.0.0.1:' + this.configService.config.defaultServerPort + this.hexoContext.config.root;
+  }
+
+  get layouts(): string[] {
+    return readdirSync(this.hexoContext.scaffold_dir).filter((value) => value.endsWith('.md')).map((value) => basename(value, '.md'));
   }
 
 }

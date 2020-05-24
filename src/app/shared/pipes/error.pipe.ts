@@ -1,8 +1,7 @@
 import { Pipe, PipeTransform } from '@angular/core';
 import { ValidationErrors } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
-import { Observable, of } from 'rxjs';
-import { concatMap, map } from 'rxjs/operators';
+import { Observable } from 'rxjs';
 import { transform } from '../utils/error';
 
 @Pipe({ name: 'errors' })

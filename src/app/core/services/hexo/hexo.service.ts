@@ -3,13 +3,12 @@ import * as ElectronStore from 'electron-store';
 import { existsSync, readdirSync } from 'fs';
 import { Server } from 'net';
 import StreamZip from 'node-stream-zip';
-import { promisify } from 'util';
+import { basename } from 'path';
+import { validPort } from '../../../shared/utils/validPort';
 import { ConfigService } from '../config/config.service';
 import { AppDataService } from '../config/data.service';
 import { ElectronService } from '../electron/electron.service';
 import { UIService } from '../ui/ui.service';
-import { basename } from 'path';
-import { validPort } from '../../../shared/utils/validPort';
 const Hexo = require('hexo/lib/hexo/index.js');
 
 @Injectable({

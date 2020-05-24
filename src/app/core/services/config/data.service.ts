@@ -1,7 +1,5 @@
 import { Injectable } from '@angular/core';
-
 import * as ElectronStore from 'electron-store';
-
 import { ConfigService } from './config.service';
 
 export class AppData {

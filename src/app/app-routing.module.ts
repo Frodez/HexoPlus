@@ -1,9 +1,7 @@
 import { NgModule } from '@angular/core';
-import { Routes, RouterModule} from '@angular/router';
-
-import { PageNotFoundComponent } from './shared/components';
-import { EditorComponent } from './modules/editor/editor.component';
+import { RouterModule, Routes } from '@angular/router';
 import { LayoutComponent } from './layout/layout.component';
+import { EditorComponent } from './modules/editor/editor.component';
 import { ViewerComponent } from './modules/viewer/viewer.component';
 import { WelcomeComponent } from './modules/welcome/welcome.component';
 

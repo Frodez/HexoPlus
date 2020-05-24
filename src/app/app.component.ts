@@ -1,11 +1,10 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ElectronService } from './core/services/electron/electron.service';
-import { TranslateService } from '@ngx-translate/core';
-import { AppConfig } from '../environments/environment';
-import { langs, ConfigService } from './core/services/config/config.service';
-import { AppDataService } from './core/services/config/data.service';
-import { Subscription } from 'rxjs';
 import { Router } from '@angular/router';
+import { TranslateService } from '@ngx-translate/core';
+import { Subscription } from 'rxjs';
+import { ConfigService, langs } from './core/services/config/config.service';
+import { AppDataService } from './core/services/config/data.service';
+import { ElectronService } from './core/services/electron/electron.service';
 
 @Component({
   selector: 'app-root',

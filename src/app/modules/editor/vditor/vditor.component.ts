@@ -1,7 +1,7 @@
-import { Component, OnInit, ViewChild, ElementRef, AfterViewInit, OnDestroy } from '@angular/core';
-import Vditor from 'vditor';
-import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
+import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { LangChangeEvent, TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
+import Vditor from 'vditor';
 
 @Component({
   selector: 'app-vditor',

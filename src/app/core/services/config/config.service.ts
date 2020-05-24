@@ -1,7 +1,5 @@
 import { Injectable } from '@angular/core';
-
 import * as ElectronStore from 'electron-store';
-import { HexoService } from '../hexo/hexo.service';
 
 export const langs: string[] = ['zh_CN', 'en_US'];
 

@@ -1,12 +1,9 @@
-import { Component, OnInit, Output, EventEmitter, OnDestroy } from '@angular/core';
+import { Component, EventEmitter, OnDestroy, OnInit, Output } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { TranslateService } from '@ngx-translate/core';
-import { from, Observable, Subscription } from 'rxjs';
-import {MatDialog, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog';
-import { SettingComponent } from '../setting/setting.component';
 import { ConfigService } from '../../../core/services/config/config.service';
-import { BrowserWindow } from 'electron';
 import { ElectronService } from '../../../core/services/electron/electron.service';
-import { HexoService } from '../../../core/services/hexo/hexo.service';
+import { SettingComponent } from '../setting/setting.component';
 
 @Component({
   selector: 'app-header',

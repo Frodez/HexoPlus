@@ -1,13 +1,11 @@
 import { Injectable } from '@angular/core';
-
+import { TranslateService } from '@ngx-translate/core';
+import * as childProcess from 'child_process';
 // If you import a module but never use any of the imported values other than as TypeScript types,
 // the resulting javascript file will look as if you never imported the module at all.
-import { ipcRenderer, webFrame, remote } from 'electron';
-import * as childProcess from 'child_process';
+import { ipcRenderer, remote, webFrame } from 'electron';
 import * as fs from 'fs';
 import { readFileSync } from 'fs';
-import { TranslateService } from '@ngx-translate/core';
-
 import { ToastrService } from 'ngx-toastr';
 import { dirname, join } from 'path';
 

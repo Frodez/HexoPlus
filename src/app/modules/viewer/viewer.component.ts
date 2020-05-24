@@ -1,7 +1,7 @@
-import { Component, OnInit, AfterViewInit, ViewChild, ElementRef, OnDestroy } from "@angular/core";
+import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from "@angular/core";
+import { DomSanitizer } from "@angular/platform-browser";
 import { Router } from "@angular/router";
 import { HexoService } from "../../core/services/hexo/hexo.service";
-import { DomSanitizer } from "@angular/platform-browser";
 
 @Component({
   selector: 'app-viewer',

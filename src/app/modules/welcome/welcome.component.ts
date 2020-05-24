@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit, OnDestroy } from "@angular/core";
+import { AfterViewInit, Component, OnDestroy, OnInit } from "@angular/core";
 import { Router } from "@angular/router";
 
 @Component({

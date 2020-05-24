@@ -1,7 +1,6 @@
+import { AbstractControl, ValidationErrors } from "@angular/forms";
 import { createServer } from "net";
-import { AbstractControl, ValidationErrors, AsyncValidatorFn } from "@angular/forms";
-import { debounceTime, distinctUntilChanged, switchMap, map, catchError, throttleTime, take, takeLast, first } from "rxjs/operators";
-import { Observable, timer } from "rxjs";
+import { catchError, debounceTime, first, switchMap } from "rxjs/operators";
 import { toIntTen } from './typeutil';
 
 /**

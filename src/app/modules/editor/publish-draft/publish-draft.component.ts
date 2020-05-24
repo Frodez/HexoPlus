@@ -1,7 +1,6 @@
-import {Component, Inject, OnInit} from '@angular/core';
-
+import { Component, Inject, OnInit } from '@angular/core';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { Config } from '../../../core/services/config/config.service';
 import { HexoService } from '../../../core/services/hexo/hexo.service';
 

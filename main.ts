@@ -1,4 +1,4 @@
-import { app, BrowserWindow, dialog, globalShortcut, ipcMain, Menu, remote, screen } from 'electron';
+import { app, BrowserWindow, globalShortcut, ipcMain, Menu, remote, screen } from 'electron';
 import * as path from 'path';
 import * as url from 'url';
 import commandExists = require('command-exists');
@@ -115,7 +115,7 @@ try {
 
 function bindKeys() {
   if(serve) {
-    globalShortcut.register('ctrl+k', () => win.webContents.openDevTools());
+    globalShortcut.register('ctrl+alt+k', () => win.webContents.openDevTools());
   }
-  globalShortcut.register('ctrl+k', () => win.webContents.openDevTools());
+  globalShortcut.register('ctrl+alt+k', () => win.webContents.openDevTools());
 }

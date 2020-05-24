@@ -2,17 +2,16 @@ import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } fr
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { writeFile, writeFileSync } from 'fs';
-import { dirname, join, basename } from 'path';
+import { basename, dirname, join } from 'path';
+import { promisify } from 'util';
 import { ConfigService } from '../../core/services/config/config.service';
 import { AppDataService } from '../../core/services/config/data.service';
 import { ElectronService } from '../../core/services/electron/electron.service';
 import { HexoService } from '../../core/services/hexo/hexo.service';
-import { NewLayoutComponent } from './new-layout/new-layout.component';
-import { VditorComponent } from './vditor/vditor.component';
 import { UIService } from '../../core/services/ui/ui.service';
-import { promisify } from 'util';
+import { NewLayoutComponent } from './new-layout/new-layout.component';
 import { PublishDraftComponent } from './publish-draft/publish-draft.component';
-
+import { VditorComponent } from './vditor/vditor.component';
 
 @Component({
   selector: 'app-editor',

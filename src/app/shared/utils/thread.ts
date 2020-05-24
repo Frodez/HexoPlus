@@ -1,4 +1,4 @@
-import { ExecException, exec, spawn, ChildProcess } from "child_process";
+import { ChildProcess, exec, ExecException, spawn } from "child_process";
 
 /**
  * 关闭pid进程及其相关进程

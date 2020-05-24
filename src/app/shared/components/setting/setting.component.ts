@@ -1,13 +1,12 @@
-import {Component, Inject, OnInit} from '@angular/core';
-
+import { Component, Inject, OnInit } from '@angular/core';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { langs, Config } from '../../../core/services/config/config.service';
-import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { ElectronService } from '../../../core/services/electron/electron.service';
-import { transform } from '../../utils/error';
 import { TranslateService } from '@ngx-translate/core';
+import { Config, langs } from '../../../core/services/config/config.service';
+import { ElectronService } from '../../../core/services/electron/electron.service';
 import { UIService } from '../../../core/services/ui/ui.service';
-import { validPort, validPortForForm } from '../../utils/validPort';
+import { transform } from '../../utils/error';
+import { validPortForForm } from '../../utils/validPort';
 
 @Component({
   selector: 'app-setting',

@@ -1,6 +1,5 @@
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
-import { Router, NavigationStart, NavigationEnd, NavigationCancel, NavigationError } from '@angular/router';
-import { MatDrawerContent, MatDrawerContainer } from '@angular/material/sidenav';
+import { Component, OnInit } from '@angular/core';
+import { NavigationCancel, NavigationEnd, NavigationError, Router } from '@angular/router';
 
 @Component({
   selector: 'app-layout',

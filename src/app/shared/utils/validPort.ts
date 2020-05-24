@@ -1,6 +1,7 @@
 import { AbstractControl, ValidationErrors } from "@angular/forms";
 import { createServer } from "net";
-import { catchError, debounceTime, first, switchMap } from "rxjs/operators";
+import { from, Observable, of } from "rxjs";
+import { catchError, first, switchMap } from "rxjs/operators";
 import { toIntTen } from './typeutil';
 
 /**
@@ -8,6 +9,13 @@ import { toIntTen } from './typeutil';
  * @param port
  */
 export async function validPort(port: number): Promise<boolean> {
+  if(port < 1 || port > 65535) {
+    return Promise.resolve(false);
+  }
+  if(port == 4200) {
+    //the port of angular service is 4200
+    return Promise.resolve(false);
+  }
   const server = createServer().listen(port);
   return new Promise((resolve, reject) => {
     server.once("listening", () => {
@@ -22,26 +30,20 @@ export async function validPort(port: number): Promise<boolean> {
 }
 
 /**
- * 这是AsyncValidatorFn的说明
- * A function that receives a control and returns a Promise or observable
- * that emits validation errors if present, otherwise null.
-  export declare interface AsyncValidatorFn {
-    (control: AbstractControl): Promise<ValidationErrors | null> | Observable<ValidationErrors | null>;
-  }
+ * 检查端口是否可用的异步验证器版本,可用于表单验证
  */
-export function validPortForForm(ctrl: AbstractControl) {
+export function validPortForForm(ctrl: AbstractControl): Observable<ValidationErrors | null> {
   if(!ctrl.valueChanges) {
-    return Promise.resolve(null);
+    return of(null);
   }
   return ctrl.valueChanges.pipe(
-    debounceTime(300),
     // 只能用switchMap,不能用map,详见https://rxjs-cn.github.io/learn-rxjs-operators/operators/transformation/switchmap.html
-    switchMap(async (value: any): Promise<ValidationErrors | null> => {
+    switchMap((value: any): Observable<ValidationErrors | null> => {
       const num = toIntTen(value);
-      const valid = await validPort(num);
-      return valid ? null : {PORT_HAS_BEEN_USED: false};
+      const validPromise = validPort(num);
+      return from(validPromise.then(valid => valid ? null : {PORT_HAS_BEEN_USED: false} as ValidationErrors));
     }),
-    catchError(() => Promise.resolve(null)),
+    catchError(() => of(null)),
     first()
   );
 }

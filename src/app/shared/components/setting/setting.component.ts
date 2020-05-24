@@ -37,7 +37,6 @@ export class SettingComponent implements OnInit {
   }
 
   confirm() {
-    console.log(this.configForm);
     if(this.configForm.valid) {
       this.dialogRef.close(this.configForm.value);
     } else {

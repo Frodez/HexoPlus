@@ -39,9 +39,18 @@ export class EditorComponent implements OnInit, OnDestroy, AfterViewInit {
     public configService: ConfigService,
     public appDataService: AppDataService,
     public uiService: UIService) {
+    //this.vditor在ngAfterViewInit时才会生成,故只能分开
     const prevFile = this.appDataService.data.prevFile;
     if(prevFile) {
       this.currentFile = prevFile.file;
+    }
+  }
+
+  ngAfterViewInit(): void {
+    const prevFile = this.appDataService.data.prevFile;
+    if(prevFile && this.vditor) {
+      //由于angular的生命周期,currentFile在此处设置会再次触发变更检测,导致再次更新页面并触发本方法,形成循环
+      this.vditor.text = prevFile.data;
     }
   }
 
@@ -59,13 +68,6 @@ export class EditorComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
-  ngAfterViewInit(): void {
-    const prevFile = this.appDataService.data.prevFile;
-    if(prevFile && this.vditor) {
-      this.vditor.text = prevFile.data;
-    }
-  }
-
   async openLayout() {
     const files = await this.electronService.readFilesAsStringByDialog({
       defaultPath: this.hexoService.hexoContext.source_dir,
@@ -80,6 +82,7 @@ export class EditorComponent implements OnInit, OnDestroy, AfterViewInit {
         this.uiService.error('ERROR.ONLY_ONE_FILE');
         return;
       }
+      this.appDataService.setPrevFile(files[0]);
       this.currentFile = files[0].file;
       this.vditor.text = files[0].data;
     } catch (error) {
@@ -101,6 +104,10 @@ export class EditorComponent implements OnInit, OnDestroy, AfterViewInit {
       try {
         this.uiService.showOverlaySpinner();
         const file = await this.hexoService.createArticle(result.title, result.layout);
+        this.appDataService.setPrevFile({
+          file: file.path,
+          data: file.content
+        });
         this.vditor.text = file.content;
         this.currentFile = file.path;
       } catch (error) {
@@ -118,6 +125,10 @@ export class EditorComponent implements OnInit, OnDestroy, AfterViewInit {
       const value = this.vditor.text;
       try {
         this.uiService.showOverlaySpinner();
+        this.appDataService.setPrevFile({
+          file: this.currentFile,
+          data: value
+        });
         await this.write(this.currentFile, value);
         this.uiService.success('SUCCESS.OPERATE');
       } catch (error) {
@@ -140,8 +151,13 @@ export class EditorComponent implements OnInit, OnDestroy, AfterViewInit {
         }]
       });
       if(!res.canceled) {
+        const value = this.vditor.text;
         this.uiService.showOverlaySpinner();
-        await this.write(res.filePath, this.vditor.text);
+        this.appDataService.setPrevFile({
+          file: res.filePath,
+          data: value
+        });
+        await this.write(res.filePath, value);
         this.uiService.success('SUCCESS.OPERATE');
       }
     } catch (error) {
@@ -162,8 +178,11 @@ export class EditorComponent implements OnInit, OnDestroy, AfterViewInit {
     try {
       this.uiService.showOverlaySpinner();
       const filename = basename(this.currentFile, '.md');
-      console.log(filename);
       const res = await this.hexoService.publishDraft(filename, layout);
+      this.appDataService.setPrevFile({
+        file: res.path,
+        data: res.content
+      });
       this.vditor.text = res.content;
       this.currentFile = res.path;
     } catch (error) {

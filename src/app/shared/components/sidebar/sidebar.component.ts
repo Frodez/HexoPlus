@@ -8,7 +8,10 @@ import { HexoService } from '../../../core/services/hexo/hexo.service';
 })
 export class SidebarComponent implements OnInit, OnDestroy {
 
-  constructor(public hexoConfig: HexoService) { }
+  initHexo: boolean;
+
+  constructor(public hexoConfig: HexoService) {
+  }
 
   ngOnInit(): void {
   }

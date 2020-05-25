@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
-import * as ElectronStore from 'electron-store';
+import ElectronStore from 'electron-store';
+import { ElectronService } from '../electron/electron.service';
 import { ConfigService } from './config.service';
 
 export class AppData {
@@ -8,6 +9,8 @@ export class AppData {
     file: string,
     data: string
   };
+
+  public projectPath: string;
 
   constructor() {}
 
@@ -22,7 +25,16 @@ export class AppDataService {
 
   private appData: AppData;
 
-  constructor(private configService: ConfigService) {}
+  constructor(private electronService: ElectronService, private configService: ConfigService) {
+    this.electronService.remote.app.on('before-quit', () => {
+      this.electronService.remote.dialog.showErrorBox('111', '222');
+      if(this.configService.config.loadHistoryAppData) {
+        this.persist();
+      } else {
+        this.clearAppData();
+      }
+    });
+  }
 
   get data(): AppData {
     if(!this.appData) {
@@ -46,6 +58,16 @@ export class AppDataService {
 
   public setPrevFile(prevFile: {file: string, data: string}) {
     this.data.prevFile = prevFile;
+    if(this.configService.config.loadHistoryAppData) {
+      this.persist();
+    }
+  }
+
+  public setProjectPath(path: string) {
+    this.data.projectPath = path;
+    if(this.configService.config.loadHistoryAppData) {
+      this.persist();
+    }
   }
 
 }

@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import * as ElectronStore from 'electron-store';
 import { existsSync, readdirSync, readFileSync, writeFileSync } from 'fs';
 import jsyaml from 'js-yaml';
 import { Server } from 'net';
@@ -14,8 +13,6 @@ import { UIService } from '../ui/ui.service';
   providedIn: 'root'
 })
 export class HexoService {
-
-  store: ElectronStore = new ElectronStore();
 
   hexoContext: any;
 
@@ -32,7 +29,7 @@ export class HexoService {
    */
   refreshContext(): void {
     if(!this.hexoContext) {
-      const location = this.store.get('hexo-config-location');
+      const location = this.dataService.data.projectPath;
       if(location) {
         this.setContext(location);
       }
@@ -76,7 +73,7 @@ export class HexoService {
     await loadConfig(this.hexoContext) as Promise<any>;
     console.log(this.hexoContext);
     this.runServer = require('hexo-server/lib/server.js').bind(this.hexoContext);
-    this.store.set('hexo-config-location', location);
+    this.dataService.setProjectPath(location);
   }
 
   /**
@@ -86,7 +83,6 @@ export class HexoService {
     this.stop();
     this.hexoContext = null;
     this.runServer = null;
-    this.store.delete('hexo-config-location');
   }
 
   /**

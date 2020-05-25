@@ -10,13 +10,17 @@ export class Config {
   public loadHistoryAppData: boolean;
   public defaultServerPort: number;
   public defaultLayout: string;
+  public defaultSiteName: string;
+  public defaultAuthorName: string;
   public static default: Config = {
     defaultLang: 'zh_CN',
     autoSave: true,
     initAndLoad: false,
     loadHistoryAppData: false,
     defaultServerPort: 4000,
-    defaultLayout: 'post'
+    defaultLayout: 'post',
+    defaultSiteName: 'Hexo',
+    defaultAuthorName: 'Frodez'
   }
 }
 

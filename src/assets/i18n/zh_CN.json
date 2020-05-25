@@ -9,7 +9,7 @@
     "INVALID_PORT":"端口不可用.请检查您的设置,或者确认没有任何程序占用该端口.",
     "INVALID_PATH":"不是一个合法的文件或者文件夹路径.",
     "VALIDATE":{
-      "REQUIRED":"必须存在数据.",
+      "REQUIRED":"不能为空.",
       "MIN":"数字不得小于{{min}}.",
       "MAX":"数字不得大于{{max}}.",
       "PORT_HAS_BEEN_USED": "端口已被占用,请选择其他可用端口."
@@ -46,7 +46,10 @@
     "HEXO": {
       "TAB": "Hexo",
       "DEFAULT_PORT":"默认端口",
-      "DEFAULT_LAYOUT":"生成布局时的默认布局"
+      "RANDOM_PORT":"随机分配端口",
+      "DEFAULT_LAYOUT":"生成布局时的默认布局",
+      "DEFAULT_SITE_NAME":"新建配置时的默认站名",
+      "DEFAULT_AUTHOR_NAME":"新建配置时的默认作者名"
     }
   },
   "SIDEBAR":{

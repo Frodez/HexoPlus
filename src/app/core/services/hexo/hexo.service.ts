@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
 import * as ElectronStore from 'electron-store';
-import { existsSync, readdirSync } from 'fs';
+import { existsSync, readdirSync, readFileSync, writeFileSync } from 'fs';
+import jsyaml from 'js-yaml';
 import { Server } from 'net';
 import StreamZip from 'node-stream-zip';
-import { basename } from 'path';
-import { validPort } from '../../../shared/utils/validPort';
+import { basename, join } from 'path';
 import { ConfigService } from '../config/config.service';
 import { AppDataService } from '../config/data.service';
 import { ElectronService } from '../electron/electron.service';
@@ -55,13 +55,19 @@ export class HexoService {
           return;
         }
         this.setContext(value.filePaths[0]);
+        //console.log(this.hexoContext.config.title);
+        //console.log(this.hexoContext.config.author);
       }
     } catch(error) {
       this.uiService.error(error);
+    } finally {
+      window.dispatchEvent(new Event('resize'));//refresh the window
+      //console.log(this.hexoContext.config.title);
+      //console.log(this.hexoContext.config.author);
     }
   }
 
-  private setContext(location: string) {
+  private async setContext(location: string) {
     this.hexoContext = new Hexo(location);
     this.hexoContext.extend.filter.register('server_middleware', require('hexo-server/lib/middlewares/header'));
     this.hexoContext.extend.filter.register('server_middleware', require('hexo-server/lib/middlewares/gzip'));
@@ -69,10 +75,10 @@ export class HexoService {
     this.hexoContext.extend.filter.register('server_middleware', require('hexo-server/lib/middlewares/route'));
     this.hexoContext.extend.filter.register('server_middleware', require('hexo-server/lib/middlewares/static'));
     this.hexoContext.extend.filter.register('server_middleware', require('hexo-server/lib/middlewares/redirect'));
-    this.hexoContext.init();
+    await this.hexoContext.init();
+    await require('hexo/lib/hexo/load_config')(this.hexoContext) as Promise<any>;
     console.log(this.hexoContext);
     this.runServer = require('hexo-server/lib/server.js').bind(this.hexoContext);
-    validPort(4200).then((value) => console.log(value));
     this.store.set('hexo-config-location', location);
   }
 
@@ -126,7 +132,14 @@ export class HexoService {
               this.uiService.success('SUCCESS.OPERATE');
             }
             this.uiService.closeOverlaySpinner();
-            zip.close();
+            zip.close((err) => {
+              const configPath = join(value.filePaths[0], '_config.yml');
+              const config = jsyaml.safeLoad(readFileSync(configPath).toString());
+              config.title = this.configService.config.defaultSiteName;
+              config.author = this.configService.config.defaultAuthorName;
+              console.log(config);
+              writeFileSync(configPath, jsyaml.safeDump(config));
+            });
           });
         });
       }
@@ -213,8 +226,30 @@ export class HexoService {
     return protocol + '://127.0.0.1:' + this.configService.config.defaultServerPort + this.hexoContext.config.root;
   }
 
+  /**
+   * 获取所有布局
+   */
   get layouts(): string[] {
     return readdirSync(this.hexoContext.scaffold_dir).filter((value) => value.endsWith('.md')).map((value) => basename(value, '.md'));
+  }
+
+  /**
+   * 加载博客配置文件
+   */
+  loadConfigYml(path: string, configName: string = '_config.yml'):any {
+    const configPath = join(path, configName);
+    const config = jsyaml.safeLoad(readFileSync(configPath).toString());
+  }
+
+  /**
+   * 保存博客配置文件
+   * @param config
+   * @param path
+   * @param configName
+   */
+  saveConfigYml(config: any, path: string, configName: string = '_config.yml') {
+    const configPath = join(path, configName);
+    writeFileSync(configPath, jsyaml.safeDump(config));
   }
 
 }

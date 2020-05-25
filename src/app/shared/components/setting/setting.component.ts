@@ -32,11 +32,14 @@ export class SettingComponent implements OnInit {
       'initAndLoad': new FormControl(this.data.initAndLoad),
       'loadHistoryAppData': new FormControl(this.data.loadHistoryAppData),
       'defaultServerPort': new FormControl(this.data.defaultServerPort, [Validators.required, Validators.min(1025), Validators.max(32768)], validPortForForm),
-      'defaultLayout': new FormControl(this.data.defaultLayout, [Validators.required])
+      'defaultLayout': new FormControl(this.data.defaultLayout, [Validators.required]),
+      'defaultSiteName': new FormControl(this.data.defaultSiteName, [Validators.required]),
+      'defaultAuthorName': new FormControl(this.data.defaultAuthorName, [Validators.required])
     });
   }
 
   confirm() {
+    console.log(this.configForm.status);
     if(this.configForm.valid) {
       this.dialogRef.close(this.configForm.value);
     } else {
@@ -48,6 +51,17 @@ export class SettingComponent implements OnInit {
         }
       })
     }
+  }
+
+  getRandomPort() {
+    const min = Math.ceil(1025), max = Math.floor(32768);
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+
+  setRandomPort() {
+    const ctrl = this.configForm.get('defaultServerPort');
+    ctrl.setValue(this.getRandomPort());
+    ctrl.markAsTouched();
   }
 
 }

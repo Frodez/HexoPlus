@@ -9,7 +9,7 @@
     "INVALID_PORT":"The port is invalid. Please check your setting or confirm that no program is occupying the port.",
     "INVALID_PATH":"The path of file or folder is invalid.",
     "VALIDATE":{
-      "REQUIRED":"There must exist data.",
+      "REQUIRED":"There must be not empty.",
       "MIN":"The number must be no less than {{min}}.",
       "MAX":"The number must be no more than {{max}}.",
       "PORT_HAS_BEEN_USED": "The port has been used. Please select the another one."
@@ -46,7 +46,10 @@
     "HEXO": {
       "TAB": "Hexo",
       "DEFAULT_PORT":"default port",
-      "DEFAULT_LAYOUT":"the default layout when you create a new layout"
+      "RANDOM_PORT":"random dispatch port",
+      "DEFAULT_LAYOUT":"the default layout when you create a new layout",
+      "DEFAULT_SITE_NAME":"default site name when you init a new site",
+      "DEFAULT_AUTHOR_NAME":"default author name when you init a new site"
     }
   },
   "SIDEBAR":{

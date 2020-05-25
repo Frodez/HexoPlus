@@ -26,6 +26,7 @@
           <span fxFlex="100">{{'SETTING.HEXO.DEFAULT_PORT' | translate}}</span>
           <mat-form-field fxFlex="100">
             <input fxFlex formControlName="defaultServerPort" matInput type="number" value="{{data.defaultServerPort}}">
+            <button mat-button fxFlex (click)="setRandomPort()">{{'SETTING.HEXO.RANDOM_PORT' | translate}}</button>
             <mat-error *ngIf="configForm.get('defaultServerPort').errors">{{configForm.get('defaultServerPort').errors | errors | async}}</mat-error>
           </mat-form-field>
         </div>
@@ -35,11 +36,25 @@
             <mat-option *ngFor="let item of ['post', 'page', 'draft']" [value]="item">{{item}}</mat-option>
           </mat-select>
         </div>
+        <div style="padding-bottom: 10px;" fxFlex="0 1 calc(33.3% - 20px)" fxFlex.lt-md="0 1 calc(50% - 20px)"  fxLayout="row wrap" fxLayout.lt-sm="column" fxLayoutGap="20px" fxLayoutAlign="flex-start">
+          <span fxFlex="100">{{'SETTING.HEXO.DEFAULT_SITE_NAME' | translate}}</span>
+          <mat-form-field fxFlex="100">
+            <input fxFlex formControlName="defaultSiteName" matInput type="text" value="{{data.defaultSiteName}}">
+            <mat-error *ngIf="configForm.get('defaultSiteName').errors">{{configForm.get('defaultSiteName').errors | errors | async}}</mat-error>
+          </mat-form-field>
+        </div>
+        <div style="padding-bottom: 10px;" fxFlex="0 1 calc(33.3% - 20px)" fxFlex.lt-md="0 1 calc(50% - 20px)"  fxLayout="row wrap" fxLayout.lt-sm="column" fxLayoutGap="20px" fxLayoutAlign="flex-start">
+          <span fxFlex="100">{{'SETTING.HEXO.DEFAULT_AUTHOR_NAME' | translate}}</span>
+          <mat-form-field fxFlex="100">
+            <input fxFlex formControlName="defaultAuthorName" matInput type="text" value="{{data.defaultAuthorName}}">
+            <mat-error *ngIf="configForm.get('defaultAuthorName').errors">{{configForm.get('defaultAuthorName').errors | errors | async}}</mat-error>
+          </mat-form-field>
+        </div>
       </div>
     </mat-tab>
   </mat-tab-group>
   <div style="padding-top: 32px;" mat-dialog-actions fxLayout fxLayoutAlign="center center">
-    <button type="button" style="font-size: 20px;" mat-button (click)="dialogRef.close()">{{'FORM.CANCEL' | translate}}</button>
-    <button type="submit" style="font-size: 20px;" mat-button (click)="confirm()" cdkFocusInitial>{{'FORM.CONFIRM' | translate}}</button>
+    <button mat-button type="button" style="font-size: 20px;" (click)="dialogRef.close()">{{'FORM.CANCEL' | translate}}</button>
+    <button mat-button cdkFocusInitial type="submit" style="font-size: 20px;" (click)="confirm()">{{'FORM.CONFIRM' | translate}}</button>
   </div>
 </form>

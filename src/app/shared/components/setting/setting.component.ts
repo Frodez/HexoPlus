@@ -39,14 +39,12 @@ export class SettingComponent implements OnInit {
   }
 
   confirm() {
-    console.log(this.configForm.status);
     if(this.configForm.valid) {
       this.dialogRef.close(this.configForm.value);
     } else {
       Object.keys(this.configForm.controls).forEach((key) => {
         const control = this.configForm.get(key);
         if(control.errors) {
-          console.log({key, value: control.errors});
           transform(this.translateService, control.errors).subscribe((value) => this.uiService.error(value));
         }
       })
@@ -54,8 +52,7 @@ export class SettingComponent implements OnInit {
   }
 
   getRandomPort() {
-    const min = Math.ceil(1025), max = Math.floor(32768);
-    return Math.floor(Math.random() * (max - min + 1)) + min;
+    return Math.floor(Math.random() * (32768 - 1025 + 1)) + 1025;// [1025, 32768]
   }
 
   setRandomPort() {

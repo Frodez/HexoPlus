@@ -24,11 +24,13 @@
       <div style="padding-top: 32px; text-align: center;" fxLayout="row wrap" fxLayout.lt-sm="column" fxLayoutGap="20px" fxLayoutAlign="flex-start">
         <div style="padding-bottom: 10px;" fxFlex="0 1 calc(33.3% - 20px)" fxFlex.lt-md="0 1 calc(50% - 20px)"  fxLayout="row wrap" fxLayout.lt-sm="column" fxLayoutGap="20px" fxLayoutAlign="flex-start">
           <span fxFlex="100">{{'SETTING.HEXO.DEFAULT_PORT' | translate}}</span>
-          <mat-form-field fxFlex="100">
-            <input fxFlex formControlName="defaultServerPort" matInput type="number" value="{{data.defaultServerPort}}">
+          <div fxFlex="100">
+            <mat-form-field fxFlex>
+              <input fxFlex formControlName="defaultServerPort" matInput type="number" value="{{data.defaultServerPort}}">
+              <mat-error *ngIf="configForm.get('defaultServerPort').errors">{{configForm.get('defaultServerPort').errors | errors | async}}</mat-error>
+            </mat-form-field>
             <button mat-button fxFlex (click)="setRandomPort()">{{'SETTING.HEXO.RANDOM_PORT' | translate}}</button>
-            <mat-error *ngIf="configForm.get('defaultServerPort').errors">{{configForm.get('defaultServerPort').errors | errors | async}}</mat-error>
-          </mat-form-field>
+          </div>
         </div>
         <div style="padding-bottom: 10px;" fxFlex="0 1 calc(33.3% - 20px)" fxFlex.lt-md="0 1 calc(50% - 20px)"  fxLayout="row wrap" fxLayout.lt-sm="column" fxLayoutGap="20px" fxLayoutAlign="flex-start">
           <span fxFlex>{{'SETTING.HEXO.DEFAULT_LAYOUT' | translate}}</span>
@@ -55,6 +57,6 @@
   </mat-tab-group>
   <div style="padding-top: 32px;" mat-dialog-actions fxLayout fxLayoutAlign="center center">
     <button mat-button type="button" style="font-size: 20px;" (click)="dialogRef.close()">{{'FORM.CANCEL' | translate}}</button>
-    <button mat-button cdkFocusInitial type="submit" style="font-size: 20px;" (click)="confirm()">{{'FORM.CONFIRM' | translate}}</button>
+    <button mat-button cdkFocusInitial type="submit" style="font-size: 20px;" [disabled]="!configForm.valid" (click)="confirm()">{{'FORM.CONFIRM' | translate}}</button>
   </div>
 </form>

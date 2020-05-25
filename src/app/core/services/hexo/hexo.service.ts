@@ -9,7 +9,6 @@ import { ConfigService } from '../config/config.service';
 import { AppDataService } from '../config/data.service';
 import { ElectronService } from '../electron/electron.service';
 import { UIService } from '../ui/ui.service';
-const Hexo = require('hexo/lib/hexo/index.js');
 
 @Injectable({
   providedIn: 'root'
@@ -55,19 +54,16 @@ export class HexoService {
           return;
         }
         this.setContext(value.filePaths[0]);
-        //console.log(this.hexoContext.config.title);
-        //console.log(this.hexoContext.config.author);
       }
     } catch(error) {
       this.uiService.error(error);
     } finally {
       window.dispatchEvent(new Event('resize'));//refresh the window
-      //console.log(this.hexoContext.config.title);
-      //console.log(this.hexoContext.config.author);
     }
   }
 
   private async setContext(location: string) {
+    const Hexo = require('hexo/lib/hexo/index.js');
     this.hexoContext = new Hexo(location);
     this.hexoContext.extend.filter.register('server_middleware', require('hexo-server/lib/middlewares/header'));
     this.hexoContext.extend.filter.register('server_middleware', require('hexo-server/lib/middlewares/gzip'));
@@ -76,7 +72,8 @@ export class HexoService {
     this.hexoContext.extend.filter.register('server_middleware', require('hexo-server/lib/middlewares/static'));
     this.hexoContext.extend.filter.register('server_middleware', require('hexo-server/lib/middlewares/redirect'));
     await this.hexoContext.init();
-    await require('hexo/lib/hexo/load_config')(this.hexoContext) as Promise<any>;
+    const loadConfig:(hexo: any) => Promise<any> = require('hexo/lib/hexo/load_config');
+    await loadConfig(this.hexoContext) as Promise<any>;
     console.log(this.hexoContext);
     this.runServer = require('hexo-server/lib/server.js').bind(this.hexoContext);
     this.store.set('hexo-config-location', location);
@@ -112,6 +109,7 @@ export class HexoService {
           return;
         }
         console.log(resource);
+        const path = value.filePaths[0];
         const zip = new StreamZip({
           file: resource,
           storeEntries: true
@@ -123,22 +121,24 @@ export class HexoService {
         zip.on('ready', () => {
           this.uiService.showOverlaySpinner();
           window.dispatchEvent(new Event('resize'));//refresh the window
-          zip.extract(null, value.filePaths[0], (error: any) => {
+          zip.extract(null, path, (error: any) => {
             if(error) {
               console.error(error);
               this.uiService.error(error);
             } else {
-              console.log(value.filePaths[0]);
+              console.log(path);
               this.uiService.success('SUCCESS.OPERATE');
             }
             this.uiService.closeOverlaySpinner();
             zip.close((err) => {
-              const configPath = join(value.filePaths[0], '_config.yml');
-              const config = jsyaml.safeLoad(readFileSync(configPath).toString());
+              const config = this.loadConfigYml(path);
               config.title = this.configService.config.defaultSiteName;
               config.author = this.configService.config.defaultAuthorName;
               console.log(config);
-              writeFileSync(configPath, jsyaml.safeDump(config));
+              this.saveConfigYml(config, path);
+              if(this.configService.config.initAndLoad) {
+                this.setContext(path);
+              }
             });
           });
         });
@@ -238,7 +238,7 @@ export class HexoService {
    */
   loadConfigYml(path: string, configName: string = '_config.yml'):any {
     const configPath = join(path, configName);
-    const config = jsyaml.safeLoad(readFileSync(configPath).toString());
+    return jsyaml.safeLoad(readFileSync(configPath).toString());
   }
 
   /**

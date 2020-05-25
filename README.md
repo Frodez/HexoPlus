@@ -1,12 +1,19 @@
 [![Angular Logo](https://www.vectorlogo.zone/logos/angular/angular-icon.svg)](https://angular.io/) [![Electron Logo](https://www.vectorlogo.zone/logos/electronjs/electronjs-icon.svg)](https://electronjs.org/)
 
-![Maintained][maintained-badge]
-[![Make a pull request][prs-badge]][prs]
 [![License](http://img.shields.io/badge/Licence-MIT-brightgreen.svg)](LICENSE.md)
 
-[![Watch on GitHub][github-watch-badge]][github-watch]
-[![Star on GitHub][github-star-badge]][github-star]
-[![Tweet][twitter-badge]][twitter]
+# roadmap
+
+0.1-alpha
+- [x] markdown WYSIWYG editor
+- [x] hexo init
+- [x] hexo new
+- [x] hexo publish
+- [x] hexo server run/stop
+- [] hexo generate
+- [] hexo deploy
+- [] hexo render
+- [] hexo clean
 
 # Introduction
 

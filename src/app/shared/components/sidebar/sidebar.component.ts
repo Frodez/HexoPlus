@@ -8,8 +8,6 @@ import { HexoService } from '../../../core/services/hexo/hexo.service';
 })
 export class SidebarComponent implements OnInit, OnDestroy {
 
-  initHexo: boolean;
-
   constructor(public hexoConfig: HexoService) {
   }
 
@@ -18,6 +16,14 @@ export class SidebarComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.hexoConfig.stop();
+  }
+
+  toggleServer() {
+    if(this.hexoConfig.serverStatus) {
+      this.hexoConfig.stop();
+    } else {
+      this.hexoConfig.run();
+    }
   }
 
 }

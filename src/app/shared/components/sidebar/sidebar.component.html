@@ -9,9 +9,9 @@
         <button mat-button (click)="hexoConfig.loadContext()">{{'SIDEBAR.LOADED.CHANGE' | translate}}</button>
         <button mat-button (click)="hexoConfig.refreshContext()">{{'SIDEBAR.LOADED.REFRESH' | translate}}</button>
         <button mat-button (click)="hexoConfig.clear()">{{'SIDEBAR.LOADED.CLEAR' | translate}}</button>
-        <button mat-button (click)="hexoConfig.run()">{{'SIDEBAR.LOADED.SERVE' | translate}}</button>
-        <button mat-button (click)="hexoConfig.stop()">{{'SIDEBAR.LOADED.STOP' | translate}}</button>
-        <button mat-button (click)="hexoConfig.clear()">{{'SIDEBAR.LOADED.CLEAR' | translate}}</button>
+        <button mat-button (click)="toggleServer()">{{(hexoConfig.serverStatus ? 'SIDEBAR.LOADED.STOP' : 'SIDEBAR.LOADED.SERVE') | translate}}</button>
+        <button mat-button (click)="hexoConfig.clean()">{{'SIDEBAR.LOADED.CLEAN' | translate}}</button>
+        <button mat-button (click)="hexoConfig.generate()">{{'SIDEBAR.LOADED.GENERATE' | translate}}</button>
       </ng-container>
       <ng-template #elseTemplate>
         <button mat-button (click)="hexoConfig.loadContext()">{{'SIDEBAR.UNLOADED.LOAD' | translate}}</button>

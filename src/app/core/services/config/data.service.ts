@@ -28,12 +28,16 @@ export class AppDataService {
   constructor(private electronService: ElectronService, private configService: ConfigService) {
     this.electronService.remote.app.on('before-quit', () => {
       this.electronService.remote.dialog.showErrorBox('111', '222');
-      if(this.configService.config.loadHistoryAppData) {
-        this.persist();
-      } else {
-        this.clearAppData();
-      }
+      this.handle();
     });
+  }
+
+  private handle() {
+    if(this.configService.config.loadHistoryAppData) {
+      this.persist();
+    } else {
+      this.clearAppData();
+    }
   }
 
   get data(): AppData {
@@ -58,16 +62,12 @@ export class AppDataService {
 
   public setPrevFile(prevFile: {file: string, data: string}) {
     this.data.prevFile = prevFile;
-    if(this.configService.config.loadHistoryAppData) {
-      this.persist();
-    }
+    this.handle();
   }
 
   public setProjectPath(path: string) {
     this.data.projectPath = path;
-    if(this.configService.config.loadHistoryAppData) {
-      this.persist();
-    }
+    this.handle();
   }
 
 }

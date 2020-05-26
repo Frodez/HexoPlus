@@ -62,7 +62,9 @@
       "REFRESH":"刷新配置",
       "CLEAR":"清除配置",
       "SERVE":"启动服务",
-      "STOP":"停止服务"
+      "STOP":"停止服务",
+      "CLEAN":"清除缓存",
+      "GENERATE":"生成静态文件"
     },
     "LOCAL_SERVER": {
       "STATUS":"本地服务器状态",

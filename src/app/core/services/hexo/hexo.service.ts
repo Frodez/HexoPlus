@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
 import { existsSync, readdirSync, readFileSync, writeFileSync } from 'fs';
 import jsyaml from 'js-yaml';
 import { Server } from 'net';
@@ -20,7 +21,13 @@ export class HexoService {
 
   server: Server;
 
-  constructor(private electronService: ElectronService, private configService: ConfigService, public dataService: AppDataService, public uiService: UIService) {
+  serverStatus: boolean = false;
+
+  runClean:(args: any) => Promise<any>;
+
+  runGenerate:(args: any) => Promise<any>;
+
+  constructor(public router: Router, private electronService: ElectronService, private configService: ConfigService, public dataService: AppDataService, public uiService: UIService) {
     this.refreshContext();
   }
 
@@ -59,7 +66,8 @@ export class HexoService {
     }
   }
 
-  private async setContext(location: string) {
+  private setContext(location: string) {
+    //init
     const Hexo = require('hexo/lib/hexo/index.js');
     this.hexoContext = new Hexo(location);
     this.hexoContext.extend.filter.register('server_middleware', require('hexo-server/lib/middlewares/header'));
@@ -68,12 +76,19 @@ export class HexoService {
     this.hexoContext.extend.filter.register('server_middleware', require('hexo-server/lib/middlewares/route'));
     this.hexoContext.extend.filter.register('server_middleware', require('hexo-server/lib/middlewares/static'));
     this.hexoContext.extend.filter.register('server_middleware', require('hexo-server/lib/middlewares/redirect'));
-    await this.hexoContext.init();
-    const loadConfig:(hexo: any) => Promise<any> = require('hexo/lib/hexo/load_config');
-    await loadConfig(this.hexoContext) as Promise<any>;
-    console.log(this.hexoContext);
-    this.runServer = require('hexo-server/lib/server.js').bind(this.hexoContext);
-    this.dataService.setProjectPath(location);
+    const initPromise = this.hexoContext.init() as Promise<any>;
+    initPromise.then(()=> {
+      const loadConfig:(hexo: any) => Promise<any> = require('hexo/lib/hexo/load_config');
+      return loadConfig(this.hexoContext) as Promise<any>;
+    }).then(() => {
+      debugger;
+      this.runServer = require('hexo-server/lib/server.js').bind(this.hexoContext);
+      this.runClean = require('hexo/lib/plugins/console/clean.js').bind(this.hexoContext);
+      this.runGenerate = require('hexo/lib/plugins/console/generate.js').bind(this.hexoContext);
+      //finally
+      this.dataService.setProjectPath(location);
+      console.log(this.hexoContext);
+    });
   }
 
   /**
@@ -83,6 +98,7 @@ export class HexoService {
     this.stop();
     this.hexoContext = null;
     this.runServer = null;
+    this.runClean = null;
   }
 
   /**
@@ -158,8 +174,10 @@ export class HexoService {
       };
       console.log(args);
       const app = await this.runServer(args);
+      this.serverStatus = true;
       this.server = app;
       this.uiService.success('SUCCESS.OPERATE');
+      this.uiService.success('http://localhost:' + args.port);
     } catch(error) {
       console.error(error);
       this.uiService.error(error);
@@ -178,13 +196,16 @@ export class HexoService {
         this.uiService.showOverlaySpinner();
         this.server.unref();
         this.server.close();
+        this.hexoContext.unwatch();
         this.server = null;
         this.dataService.persist();
+        this.serverStatus = false;
       } catch (error) {
         console.error(error);
         this.uiService.error(error);
       } finally {
         this.uiService.closeOverlaySpinner();
+        this.router.navigateByUrl('welcome');
         window.dispatchEvent(new Event('resize'));//refresh the window
       }
     }
@@ -246,6 +267,32 @@ export class HexoService {
   saveConfigYml(config: any, path: string, configName: string = '_config.yml') {
     const configPath = join(path, configName);
     writeFileSync(configPath, jsyaml.safeDump(config));
+  }
+
+  async clean() {
+    try {
+      this.uiService.showOverlaySpinner();
+      await this.runClean({});
+    } catch (error) {
+      console.error(error);
+      this.uiService.error(error);
+    } finally {
+      this.uiService.closeOverlaySpinner();
+      window.dispatchEvent(new Event('resize'));//refresh the window
+    }
+  }
+
+  async generate() {
+    try {
+      this.uiService.showOverlaySpinner();
+      await this.runGenerate({});
+    } catch (error) {
+      console.error(error);
+      this.uiService.error(error);
+    } finally {
+      this.uiService.closeOverlaySpinner();
+      window.dispatchEvent(new Event('resize'));//refresh the window
+    }
   }
 
 }

@@ -57,6 +57,6 @@
   </mat-tab-group>
   <div style="padding-top: 32px;" mat-dialog-actions fxLayout fxLayoutAlign="center center">
     <button mat-button type="button" style="font-size: 20px;" (click)="dialogRef.close()">{{'FORM.CANCEL' | translate}}</button>
-    <button mat-button cdkFocusInitial type="submit" style="font-size: 20px;" [disabled]="!configForm.valid" (click)="confirm()">{{'FORM.CONFIRM' | translate}}</button>
+    <button mat-button cdkFocusInitial type="submit" style="font-size: 20px;" (click)="confirm()">{{'FORM.CONFIRM' | translate}}</button>
   </div>
 </form>

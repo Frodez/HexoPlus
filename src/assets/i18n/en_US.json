@@ -60,9 +60,11 @@
     "LOADED": {
       "CHANGE":"change",
       "REFRESH":"refresh",
-      "CLEAR":"clear",
+      "CLEAR":"clear config",
       "SERVE":"serve",
-      "STOP":"stop"
+      "STOP":"stop",
+      "CLEAN":"clean cache",
+      "GENERATE":"generate"
     },
     "LOCAL_SERVER": {
       "STATUS":"local server status",

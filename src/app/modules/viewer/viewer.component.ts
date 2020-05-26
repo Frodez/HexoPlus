@@ -9,15 +9,18 @@ import { HexoService } from "../../core/services/hexo/hexo.service";
 })
 export class ViewerComponent implements OnInit, AfterViewInit, OnDestroy {
 
-  @ViewChild('iframe') iframe: ElementRef
+  @ViewChild('iframe') element: ElementRef;
 
   constructor(private router: Router, public hexo: HexoService, private sanitizer: DomSanitizer) {
   }
+
   ngOnInit(): void {
   }
+
   ngAfterViewInit(): void {
     window.dispatchEvent(new Event('resize'));//refresh the window
   }
+
   ngOnDestroy(): void {
   }
 

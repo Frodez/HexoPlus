@@ -27,9 +27,9 @@ export class AppDataService {
 
   constructor(private electronService: ElectronService, private configService: ConfigService) {
     this.electronService.remote.app.on('before-quit', () => {
-      this.electronService.remote.dialog.showErrorBox('111', '222');
       this.handle();
     });
+    setInterval(this.handle, 60000);
   }
 
   private handle() {

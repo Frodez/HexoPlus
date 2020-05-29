@@ -10,10 +10,8 @@
 - [x] hexo new
 - [x] hexo publish
 - [x] hexo server run/stop
-- [ ] hexo generate
-- [ ] hexo deploy
-- [ ] hexo render
-- [ ] hexo clean
+- [x] hexo generate
+- [x] hexo clean
 
 # Introduction
 
